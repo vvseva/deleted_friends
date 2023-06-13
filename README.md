@@ -1,2 +1,2 @@
 # deleted_friends
-Shiny apps to question your removed Facebook friends
+Shiny apps to understand the Facebook removed friends
