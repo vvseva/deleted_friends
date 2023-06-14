@@ -1,0 +1,21 @@
+---
+title: "Open files"
+format: html
+---
+
+```{r}
+library(tidyverse)
+library(jsonlite)
+```
+https://www.facebook.com/dyi/?referrer=ayi
+
+```{r}
+fb_df <- unzip("facebook-vvsuschevskiy (1).zip", "friends_and_followers/removed_friends.json") |> read_json()
+
+
+fb_df |> 
+  as_tibble() |> 
+  unnest_wider(col = deleted_friends_v2) |> 
+  mutate(timestamp = timestamp |> as.Date.POSIXct())
+```
+
