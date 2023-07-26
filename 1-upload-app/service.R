@@ -1,7 +1,11 @@
+purple_colfunc <- colorRampPalette(c("#E4E0EE", "#836EAA"))
+
 render_question <- function(deleted_friend){
-  f_name <- deleted_friend$name
-  id <- deleted_friend$id
-  timestamp <- deleted_friend$timestamp
+  
+  f_name <- deleted_friend |> pull(name)
+  id <- deleted_friend |> pull(id)
+  timestamp <- deleted_friend |> pull(timestamp)
+  bg_color <- deleted_friend |> pull(bg_color)
   
   if (is_empty(deleted_friend)) {
     column(
@@ -14,6 +18,7 @@ render_question <- function(deleted_friend){
     column(
       width = 8,
       div(class = "questions_div",
+          style = str_glue("width: 100%; background-color:{bg_color}; border-radius: 25px;"),
           h4(str_glue("Who is {f_name}, that you deleted at {timestamp}")),
           sliderInput(
             # class = "slider_likert",

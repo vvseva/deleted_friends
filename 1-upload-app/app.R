@@ -3,6 +3,8 @@ library(shiny)
 library(tidyverse)
 library(jsonlite)
 library(purrr)
+library(colorspace)
+
 source("service.R")
 
 # Define UI for application that draws a histogram
@@ -53,7 +55,10 @@ server <- function(input, output, session) {
       mutate(timestamp = timestamp |> 
                as.Date.POSIXct()) |> 
       head(10) |> 
-      mutate(id = row_number())
+      mutate(id = row_number()) |> 
+      mutate(bg_color = n() |> 
+               purple_colfunc() |> 
+               lighten(amount = 0.75))
     
     if (nrow(fb_df) == 0) {
       # fb_df <- tibble(Error = "Sorry, there are no deleted friends")
@@ -70,8 +75,6 @@ server <- function(input, output, session) {
     print("session ended")
     # unlink("friends_and_followers/removed_friends.json")
   })
-    # # print("session ended"),
-    # unlink("friends_and_followers"))
 
 }
 

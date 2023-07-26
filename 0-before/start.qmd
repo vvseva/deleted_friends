@@ -32,4 +32,10 @@ df_1 |>
 
 ?pmap_dfr
 ```
+# colors
+
+```{r}
+df_1 |> 
+  mutate(bg_color = cm.colors(n()))
+```
 
