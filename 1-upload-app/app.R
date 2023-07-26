@@ -19,7 +19,8 @@ ui <- fluidPage(
 
         # Show a plot of the generated distribution
         mainPanel(
-          fileInput("upload_deleted", "Upload a facebook file"),
+          fileInput("upload_deleted", "Upload a facebook file",
+                    accept = ".zip"),
           # tableOutput("table_deleted")
           htmlOutput("html_deleted")
         )
@@ -27,7 +28,7 @@ ui <- fluidPage(
 )
 
 # Define server logic required to draw a histogram
-server <- function(input, output) {
+server <- function(input, output, session) {
 
 #   fb_df <- unzip("facebook-vvsuschevskiy (1).zip", "friends_and_followers/removed_friends.json") |> read_json()
 # 
@@ -39,7 +40,10 @@ server <- function(input, output) {
 
   observeEvent(input$upload_deleted, {
     
-    fb_df <- unzip(input$upload_deleted$datapath, "friends_and_followers/removed_friends.json") |> 
+    fb_df <- unzip(zipfile = input$upload_deleted$datapath,
+                   files  = "friends_and_followers/removed_friends.json",
+                   exdir = tempdir()
+                   ) |> 
       read_json()
     
     
@@ -62,7 +66,13 @@ server <- function(input, output) {
                                       purrr::map(render_question))
   })
   
-  # output$files <- renderTable(input$upload)
+  onStop(function() {
+    print("session ended")
+    # unlink("friends_and_followers/removed_friends.json")
+  })
+    # # print("session ended"),
+    # unlink("friends_and_followers"))
+
 }
 
 # Run the application 
