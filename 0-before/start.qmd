@@ -16,6 +16,20 @@ fb_df <- unzip("facebook-vvsuschevskiy (1).zip", "friends_and_followers/removed_
 fb_df |> 
   as_tibble() |> 
   unnest_wider(col = deleted_friends_v2) |> 
-  mutate(timestamp = timestamp |> as.Date.POSIXct())
+  mutate(timestamp = timestamp |> as.Date.POSIXct()) |> 
+  mutate(id = row_number()) -> df_1
+
+df_1
+
+t1[1] -> t2
+t2 |> as.data.frame() |> 
+  render_question()
+
+df_1 |>
+  purrr::pmap(data.frame) |> 
+  purrr::map(render_question)
+
+
+?pmap_dfr
 ```
 

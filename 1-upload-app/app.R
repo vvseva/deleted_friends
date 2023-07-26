@@ -1,15 +1,9 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
 
 library(shiny)
 library(tidyverse)
 library(jsonlite)
+library(purrr)
+source("service.R")
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -21,17 +15,13 @@ ui <- fluidPage(
     sidebarLayout(
         sidebarPanel(
           "Instructions"
-        #     sliderInput("bins",
-        #                 "Number of bins:",
-        #                 min = 1,
-        #                 max = 50,
-        #                 value = 30)
         ),
 
         # Show a plot of the generated distribution
         mainPanel(
           fileInput("upload_deleted", "Upload a facebook file"),
-          tableOutput("table_deleted")
+          # tableOutput("table_deleted")
+          htmlOutput("html_deleted")
         )
     )
 )
@@ -56,15 +46,20 @@ server <- function(input, output) {
     fb_df <- fb_df |> 
       as_tibble() |> 
       unnest_wider(col = deleted_friends_v2) |> 
-      mutate(timestamp = timestamp |> as.Date.POSIXct()) |> 
-      head(10)
+      mutate(timestamp = timestamp |> 
+               as.Date.POSIXct()) |> 
+      head(10) |> 
+      mutate(id = row_number())
     
     if (nrow(fb_df) == 0) {
-      fb_df <- tibble(Error = "Sorry, there are no deleted friedns")
+      # fb_df <- tibble(Error = "Sorry, there are no deleted friends")
+      fb_html <- HTML(h4("Sorry, there are no deleted friends"))
     }
-    
-    output$table_deleted <- renderTable(fb_df)
-    
+
+    # output$table_deleted <- renderTable(fb_df)
+    output$html_deleted <- renderUI(fb_df |>
+                                      purrr::pmap(data.frame) |>
+                                      purrr::map(render_question))
   })
   
   # output$files <- renderTable(input$upload)
