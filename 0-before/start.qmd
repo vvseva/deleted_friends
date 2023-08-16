@@ -37,5 +37,7 @@ df_1 |>
 ```{r}
 df_1 |> 
   mutate(bg_color = cm.colors(n()))
+
+purple_colfunc <- colorRampPalette(c("#E4E0EE", "#836EAA"))
 ```
 
