@@ -136,20 +136,43 @@ server <- function(input, output, session) {
   observeEvent(input$actionButton1_verify, {
     hide("questions_1_div")
     
+    ## TODO: replace with loop map?
     
-    output_df <- tibble(
-      user = session$token,
-      friend = 
-    )
+    answers_1 <- tibble(
+      id = 1,
+      question = c("input$radioButtons_political1", 
+                   "input$radioButtons_political2"),
+      answer = c(input$radioButtons_political1_1, 
+                 input$radioButtons_political2_1)
+      )
+    
+    answers_2 <- tibble(
+      id = 2,
+      question = c("input$radioButtons_political1", 
+                   "input$radioButtons_political2"),
+      answer = c(input$radioButtons_political1_2, 
+                 input$radioButtons_political2_2)
+      )
+    
+    answers_all <- answers_1 |> 
+      bind_rows(answers_2)
+    
+    output_df <- isolate(values$fb_df_filtered) |> 
+      left_join(answers_all) |> 
+      rowwise() |> 
+      mutate(name = map_chr(name, digest, algo = 'md5')) |> 
+      mutate(user = session$token) |> 
+      select(user, name, timestamp,question, answer)
     
     output$html_verification <- renderUI(
       column(
-        width = 10,
-        renderTable(tibble(user = session$token,
-                           fri) |> 
+        width = 8,
+        renderTable(output_df |> 
                       head(10)),
         actionButton(inputId = "actionButton_sumbit",
-                   label = "Sumbit")
+                   label = "Sumbit"),
+        actionButton(inputId = "actionButton_sumbit0",
+                     label = "Remove all my data from the study delete facebook")
       )
     )
     
