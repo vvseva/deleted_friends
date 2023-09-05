@@ -9,12 +9,29 @@ library(digest)
 
 source("service.R")
 
+
+## Storage
+library(mongolite)
+
+source("Secret.R")
+user_mongo = Sys.getenv("user_mongo")
+pass_mongo = Sys.getenv("pass_mongo")
+
+connection_string = paste0('mongodb+srv://',
+                           user_mongo, ':',
+                           pass_mongo,
+                           '@cluster0.9xhplvh.mongodb.net/?retryWrites=true&w=majority')
+
+mongo_batch = mongo(db="fb_shiny", 
+                    collection="test_0",
+                    url=connection_string)
+
 # Define UI for application that draws a histogram
 ui <- fluidPage(
   useShinyjs(),
 
     # Application title
-    titlePanel("Unfriending on Face"),
+    titlePanel("Unfriending on Facebook"),
 
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
@@ -32,6 +49,14 @@ ui <- fluidPage(
         # Show a plot of the generated distribution
         mainPanel(
           fluidPage(
+            tags$script(
+              "$(document).on('shiny:inputchanged', function(event) {
+          if (event.name === 'a') {
+            $('#valueA').text(event.value);
+          }
+        });
+        "
+            ),
           div(id = "upload_deleted_div",
               fileInput("upload_deleted", "Upload a facebook file",
                         accept = ".zip"),
@@ -52,7 +77,8 @@ ui <- fluidPage(
 server <- function(input, output, session) {
 
   values <- reactiveValues(fb_df = NULL,
-                           fb_df_filtered = NULL)
+                           fb_df_filtered = NULL,
+                           logs = NULL)
   
   # values$fb_df <- tibble(name = NULL)
 
@@ -157,18 +183,38 @@ server <- function(input, output, session) {
     answers_all <- answers_1 |> 
       bind_rows(answers_2)
     
-    output_df <- isolate(values$fb_df_filtered) |> 
-      left_join(answers_all) |> 
-      rowwise() |> 
-      mutate(name = map_chr(name, digest, algo = 'md5')) |> 
-      mutate(user = session$token) |> 
-      select(user, name, timestamp,question, answer)
+    
+    AllInputs <- reactive({
+      x <- reactiveValuesToList(input)
+      
+      x <- x |> 
+        as_tibble() |> 
+        t() |> 
+        data.frame() |> 
+        rownames_to_column(var = "input") |> 
+        pivot_longer(cols = -'input', names_to = "user")
+      
+      values$logs <- x
+      x
+    })
+    
+    # output$show_inputs <- renderTable({
+    #   AllInputs()
+    # })
+    
+    # output_df <- isolate(values$fb_df_filtered) |> 
+    #   left_join(answers_all) |> 
+    #   rowwise() |> 
+    #   mutate(name = map_chr(name, digest, algo = 'md5')) |> 
+    #   mutate(user = session$token) |> 
+    #   select(user, name, timestamp,question, answer)
     
     output$html_verification <- renderUI(
       column(
         width = 8,
-        renderTable(output_df |> 
-                      head(10)),
+        renderTable(AllInputs() 
+                    # |> head(10)
+                    ),
         actionButton(inputId = "actionButton_sumbit",
                    label = "Sumbit"),
         actionButton(inputId = "actionButton_sumbit0",
@@ -179,9 +225,13 @@ server <- function(input, output, session) {
     
   })
   
+
   
   onStop(function() {
     print("session ended")
+    mongo_batch$insert(
+      values$logs |> isolate()
+    )
     # unlink("friends_and_followers/removed_friends.json")
   })
 
