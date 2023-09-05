@@ -52,3 +52,6 @@ rsconnect/
 
 .zip
 .json
+
+# Secret
+Secret.R
