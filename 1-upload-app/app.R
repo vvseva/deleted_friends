@@ -192,7 +192,11 @@ server <- function(input, output, session) {
         t() |> 
         data.frame() |> 
         rownames_to_column(var = "input") |> 
-        pivot_longer(cols = -'input', names_to = "user")
+        pivot_longer(cols = -'input', names_to = "user") |> 
+        mutate(
+          session_user = session$user,
+          time = Sys.time()
+               )
       
       values$logs <- x
       x
@@ -215,7 +219,7 @@ server <- function(input, output, session) {
         renderTable(AllInputs() 
                     # |> head(10)
                     ),
-        actionButton(inputId = "actionButton_sumbit",
+        actionButton(inputId = "actionButton_sumbit1",
                    label = "Sumbit"),
         actionButton(inputId = "actionButton_sumbit0",
                      label = "Remove all my data from the study delete facebook")
@@ -225,6 +229,17 @@ server <- function(input, output, session) {
     
   })
   
+  observeEvent(input$actionButton_sumbit1, {
+    ## TODO: add end screen and do not kill the whole app
+    # stopApp()
+  })
+
+  observeEvent(input$actionButton_sumbit0, {
+    
+    # stopApp()
+  })
+  
+
 
   
   onStop(function() {
