@@ -85,7 +85,7 @@ server <- function(input, output, session) {
   observeEvent(input$upload_deleted, {
     
     fb_df <- unzip(zipfile = input$upload_deleted$datapath,
-                   files  = "friends_and_followers/removed_friends.json",
+                   files  = "connections/friends/removed_friends.json",
                    exdir = tempdir()
                    ) |> 
       read_json()
@@ -198,6 +198,7 @@ server <- function(input, output, session) {
           time = Sys.time()
                )
       
+       ## TODO: add time of friends
       values$logs <- x
       x
     })
