@@ -84,11 +84,24 @@ server <- function(input, output, session) {
 
   observeEvent(input$upload_deleted, {
     
-    fb_df <- unzip(zipfile = input$upload_deleted$datapath,
-                   files  = "connections/friends/removed_friends.json",
-                   exdir = tempdir()
-                   ) |> 
-      read_json()
+    tryCatch({
+      ### TODO: fix if not deleted friends
+      
+      fb_df <- unzip(zipfile = input$upload_deleted$datapath,
+                     files  = "connections/friends/removed_friends.json",
+                     exdir = tempdir()
+      ) |> 
+        read_json()
+      
+    }, error=function(e) {
+      cat(paste("in err handler2\n"),e)
+      fb_df <- tibble(deleted_friends_v2 = NULL)
+    }, warning=function(w) {
+      cat(paste("in warn handler2\n"),w)
+      fb_df <- tibble(deleted_friends_v2 = NULL)
+    })
+    
+
     
     
     values$fb_df <- fb_df |> 
@@ -105,7 +118,7 @@ server <- function(input, output, session) {
     if (nrow(values$fb_df) == 0) {
       output$html_deleted <- renderUI(
         HTML(
-          h4("Sorry, there are no deleted friends")
+          h4("Sorry, you have not deleted any friends in the past 3 years, and therefore you are not qualify for the next part of the study")
           )
         )
     }
