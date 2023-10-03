@@ -6,6 +6,7 @@ library(purrr)
 library(colorspace)
 library(shinyjs)
 library(digest)
+library(shinyWidgets)
 
 source("service.R")
 
@@ -67,6 +68,9 @@ ui <- fluidPage(
               ),
           div(id = "questions_2_div",
               htmlOutput("html_existing")
+          ),
+          div(id = "questions_p_div",
+              htmlOutput("html_personal")
           ),
           div(id = "verification_div",
               htmlOutput("html_verification")
@@ -231,7 +235,7 @@ server <- function(input, output, session) {
           ),
           fluidRow(
             div(
-              actionButton(inputId = "actionButton1_verify",
+              actionButton(inputId = "actionButton1_removed",
                            label = "Next"),
               style = "display:inline-block; float:right;"
             ),
@@ -241,29 +245,49 @@ server <- function(input, output, session) {
     
   })
   
-  observeEvent(input$actionButton1_verify, {
+  observeEvent(input$actionButton1_removed, {
     hide("questions_2_div")
+    
+    output$html_personal <- renderUI(
+      column(
+        width = 8,
+        fluidRow(
+          render_question_p()
+        ),
+        fluidRow(
+          div(
+            actionButton(inputId = "actionButton1_verify",
+                         label = "Next"),
+            style = "display:inline-block; float:right;"
+          ),
+        )
+      )
+    )
+  })
+  
+  observeEvent(input$actionButton1_verify, {
+    hide("questions_p_div")
     
     ## TODO: replace with loop map?
     
-    answers_1 <- tibble(
-      id = 1,
-      question = c("input$radioButtons_political1", 
-                   "input$radioButtons_political2"),
-      answer = c(input$radioButtons_political1_1, 
-                 input$radioButtons_political2_1)
-      )
-    
-    answers_2 <- tibble(
-      id = 2,
-      question = c("input$radioButtons_political1", 
-                   "input$radioButtons_political2"),
-      answer = c(input$radioButtons_political1_2, 
-                 input$radioButtons_political2_2)
-      )
-    
-    answers_all <- answers_1 |> 
-      bind_rows(answers_2)
+    # answers_1 <- tibble(
+    #   id = 1,
+    #   question = c("input$radioButtons_political1", 
+    #                "input$radioButtons_political2"),
+    #   answer = c(input$radioButtons_political1_1, 
+    #              input$radioButtons_political2_1)
+    #   )
+    # 
+    # answers_2 <- tibble(
+    #   id = 2,
+    #   question = c("input$radioButtons_political1", 
+    #                "input$radioButtons_political2"),
+    #   answer = c(input$radioButtons_political1_2, 
+    #              input$radioButtons_political2_2)
+    #   )
+    # 
+    # answers_all <- answers_1 |> 
+    #   bind_rows(answers_2)
     
     
     AllInputs <- reactive({
