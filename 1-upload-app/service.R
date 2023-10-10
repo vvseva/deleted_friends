@@ -451,3 +451,17 @@ render_question_p <- function(){
     )
   )
 }
+
+
+track_that <- function(mongo_batch_track, 
+                       time,
+                       session,
+                       stage = "test"){
+  mongo_batch_track$insert(
+    data.frame(
+      session = session,
+      time = time,
+      stage = stage
+    )
+  )
+}

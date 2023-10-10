@@ -7,6 +7,7 @@ library(colorspace)
 library(shinyjs)
 library(digest)
 library(shinyWidgets)
+library(rclipboard)
 
 source("service.R")
 
@@ -27,6 +28,10 @@ mongo_batch = mongo(db="fb_shiny",
                     collection="test_0",
                     url=connection_string)
 
+mongo_batch_track = mongo(db="fb_shiny", 
+                    collection="tracking_0",
+                    url=connection_string)
+
 # Define UI for application that draws a histogram
 ui <- fluidPage(
   useShinyjs(),
@@ -37,6 +42,7 @@ ui <- fluidPage(
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
         sidebarPanel(
+          div(id = "intro_div",
           HTML("
                <b> Instructions and opt-out: </b> <br>
                In the following survey, we will ask questions about 
@@ -45,11 +51,13 @@ ui <- fluidPage(
                If there are any individuals that you wish to avoid 
                discussing, please uncheck their names here.
                ")
+          )
         ),
 
         # Show a plot of the generated distribution
         mainPanel(
           fluidPage(
+            rclipboardSetup(),
             tags$script(
               "$(document).on('shiny:inputchanged', function(event) {
           if (event.name === 'a') {
@@ -59,7 +67,7 @@ ui <- fluidPage(
         "
             ),
           div(id = "upload_deleted_div",
-              fileInput("upload_deleted", "Upload a facebook file",
+              fileInput("upload_deleted", "Upload a facebook zip file",
                         accept = ".zip"),
               htmlOutput("html_confirm_friends")
               ),
@@ -74,6 +82,9 @@ ui <- fluidPage(
           ),
           div(id = "verification_div",
               htmlOutput("html_verification")
+          ),
+          div(id = "final_div",
+              htmlOutput("html_final")
           )
         )
     )
@@ -86,11 +97,13 @@ server <- function(input, output, session) {
   values <- reactiveValues(fb_df_removed = NULL,
                            fb_df_existing = NULL,
                            fb_df_filtered = NULL,
-                           logs = NULL)
+                           logs = NULL,
+                           remove = FALSE)
   
   # values$fb_df <- tibble(name = NULL)
 
   observeEvent(input$upload_deleted, {
+    
     
     fb_removed_df <- tryCatch({
       ### TODO: fix if not deleted friends
@@ -112,7 +125,12 @@ server <- function(input, output, session) {
 
     if (nrow(fb_removed_df) < 1)  {
       output$html_confirm_friends <- renderUI(
-          h4("Sorry, you have not deleted any friends in the past 3 years, and therefore you are not qualify for the next part of the study")
+          h4("Sorry, you have not deleted any friends in the past 3 years, and therefore you are not qualify for the next part of the study"),
+          
+          track_that(mongo_batch_track = mongo_batch_track, 
+                     time = Sys.time(),
+                     session = session$token,
+                     stage = "html_confirm_friends_0")
       )
     } else {
       
@@ -161,7 +179,7 @@ server <- function(input, output, session) {
         width = 8,
         checkboxGroupInput(
           inputId = "checkboxGroupInput_fb_cpnfirm",
-          label = "Selected deleted friends",
+          label = "Please, uncheck names that you do not feel comfortable talking about.",
           choices = c(values$fb_df_existing$name, values$fb_df_removed$name),
           selected  = c(values$fb_df_existing$name, values$fb_df_removed$name)
         ),
@@ -169,6 +187,11 @@ server <- function(input, output, session) {
                      label = "Confirm")
       )
     )
+    
+    track_that(mongo_batch_track = mongo_batch_track, 
+               time = Sys.time(),
+               session = session$token,
+               stage = "html_confirm_friends_1")
   }
     
   
@@ -179,6 +202,7 @@ server <- function(input, output, session) {
   
   
   observeEvent(input$actionButton_fb_confirm, {
+    hide("intro_div")
     hide("upload_deleted_div")
     
     values$fb_df_removed_filtered <- isolate(values$fb_df_removed) |> 
@@ -208,6 +232,11 @@ server <- function(input, output, session) {
       )
       ))
     }
+    
+    track_that(mongo_batch_track = mongo_batch_track, 
+               time = Sys.time(),
+               session = session$token,
+               stage = "html_deleted")
     
   })
   
@@ -263,31 +292,15 @@ server <- function(input, output, session) {
         )
       )
     )
+    
+    track_that(mongo_batch_track = mongo_batch_track, 
+               time = Sys.time(),
+               session = session$token,
+               stage = "html_personal")
   })
   
   observeEvent(input$actionButton1_verify, {
     hide("questions_p_div")
-    
-    ## TODO: replace with loop map?
-    
-    # answers_1 <- tibble(
-    #   id = 1,
-    #   question = c("input$radioButtons_political1", 
-    #                "input$radioButtons_political2"),
-    #   answer = c(input$radioButtons_political1_1, 
-    #              input$radioButtons_political2_1)
-    #   )
-    # 
-    # answers_2 <- tibble(
-    #   id = 2,
-    #   question = c("input$radioButtons_political1", 
-    #                "input$radioButtons_political2"),
-    #   answer = c(input$radioButtons_political1_2, 
-    #              input$radioButtons_political2_2)
-    #   )
-    # 
-    # answers_all <- answers_1 |> 
-    #   bind_rows(answers_2)
     
     
     AllInputs <- reactive({
@@ -305,45 +318,94 @@ server <- function(input, output, session) {
                )
       
        ## TODO: add time of friends
-      values$logs <- x
-      x
+      if (values$remove == TRUE) {
+        values$logs <- data.frame(
+          input = "removed",
+          session_user = session$user,
+          time = Sys.time()
+        )
+      } else {
+        values$logs <- x
+        # x
+      }
+      
+
     })
     
-    # output$show_inputs <- renderTable({
-    #   AllInputs()
-    # })
-    
-    # output_df <- isolate(values$fb_df_filtered) |> 
-    #   left_join(answers_all) |> 
-    #   rowwise() |> 
-    #   mutate(name = map_chr(name, digest, algo = 'md5')) |> 
-    #   mutate(user = session$token) |> 
-    #   select(user, name, timestamp,question, answer)
     
     output$html_verification <- renderUI(
       column(
         width = 8,
-        renderTable(AllInputs() 
+        h4("An example of the anonymized data that we collect."),
+        renderTable(AllInputs() |> 
+                      sample_n(10)
                     # |> head(10)
                     ),
         actionButton(inputId = "actionButton_sumbit1",
                    label = "Sumbit"),
         actionButton(inputId = "actionButton_sumbit0",
-                     label = "Remove all my data from the study delete facebook")
+                     label = "Remove all my data from the study.")
       )
     )
     
-    
+  
+    track_that(mongo_batch_track = mongo_batch_track, 
+               time = Sys.time(),
+               session = session$token,
+               stage = "html_verification")
   })
   
   observeEvent(input$actionButton_sumbit1, {
-    ## TODO: add end screen and do not kill the whole app
-    # stopApp()
-  })
-
-  observeEvent(input$actionButton_sumbit0, {
+    hide("verification_div")
     
-    # stopApp()
+    output$text_token_out <- renderText({ session$token })
+    
+    output$html_final <- renderUI(
+      column(
+        width = 8,
+        fluidRow(),
+        h4("Thank your for the participation in the survey, please copy this code and paste it to the qualtrics."),
+        fluidRow(
+          verbatimTextOutput("text_token_out")
+        ),
+        fluidRow(
+          align = "right",
+          rclipButton(
+            inputId = "clipbtn",
+            label = "Copy code",
+            clipText = session$token, 
+            icon = icon("clipboard")
+          )
+        )
+        
+      )
+    )
+    
+    track_that(mongo_batch_track = mongo_batch_track, 
+               time = Sys.time(),
+               session = session$token,
+               stage = "html_final_1")
+    
+  })
+  
+  observeEvent(input$actionButton_sumbit0, {
+    hide("verification_div")
+    
+    values$remove <- TRUE
+    
+    output$html_final <- renderUI(
+      column(
+        width = 8,
+        fluidRow(),
+        h4("Your data was removed from the survey, feel free to close the tab."),
+      )
+    )
+    
+    track_that(mongo_batch_track = mongo_batch_track, 
+               time = Sys.time(),
+               session = session$token,
+               stage = "html_final_0")
+    
   })
   
 
@@ -354,6 +416,10 @@ server <- function(input, output, session) {
     mongo_batch$insert(
       values$logs |> isolate()
     )
+    track_that(mongo_batch_track = mongo_batch_track, 
+               time = Sys.time(),
+               session = session$token,
+               stage = "session_ended")
     # unlink("friends_and_followers/removed_friends.json")
   })
 
