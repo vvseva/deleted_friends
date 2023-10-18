@@ -1,5 +1,5 @@
 ---
-title: "Open files"
+title: "Generate simulated data"
 format: html
 ---
 
@@ -81,6 +81,8 @@ df_start |>
 
 
 ```{r}
+## random effects for ego (individual users)
+
 mod = glmer(friend ~ (1|ego) + ideology, 
             data = df_start,
             family = binomial(link = "logit") )
