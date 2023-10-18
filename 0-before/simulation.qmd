@@ -1,0 +1,97 @@
+---
+title: "Open files"
+format: html
+---
+
+
+```{r}
+library(lme4) # v. 1.1-23
+library(purrr) # v. 0.3.4
+library(ggplot2) # v. 3.3.2
+library(tidyverse)
+library(ggdist)
+library(sjPlot)
+```
+
+
+```{r}
+set.seed(123)
+
+n_users = 20
+n_alters = 3*2
+
+ego = rep(paste0("user_", c(1:n_users)), n_alters*2)
+ego_var = rep(rnorm(n_users, mean = 1, 0.5), n_alters*2)
+alter = rep(paste0("friend_", c(1:n_alters)), n_users*2)
+
+df_start <- tibble(
+  ego,
+  ego_var,
+  alter,
+)  |> 
+  rowwise() |>
+  mutate(friend = sample(c("existing", "removed"), 1)) |> 
+  mutate(friend = friend |> as.factor()) |> 
+  rowwise() |> 
+  mutate(ideology = case_when(
+    friend == "removed"~ sample(c(4, 5, 5), 1) * ego_var,
+    friend == "existing"~ sample(c(1, 2, 2), 1) * ego_var
+  ) |> round())
+
+df_start 
+```
+
+```{r}
+df_start |> 
+  ggplot()+
+  # geom_point(aes(x = ego, y = ego_var), size = 3)+
+  geom_boxplot(aes(x = ego, y = ideology))+
+  theme_minimal()
+```
+
+
+```{r}
+df_start |> 
+  filter(ego %in% c(paste0("user_", c(1:6)))) |> 
+  ggplot()+
+  # geom_point(aes(x = ego, y = ego_var), size = 3)+
+  geom_boxplot(aes(x = ego, y = ideology, color = friend))+
+  theme_minimal()
+```
+
+
+```{r}
+df_start |> 
+  ggplot(aes(x = ideology, y = friend))+
+  geom_swarm(aes(color = friend), side = "bottom")+
+  stat_halfeye(aes(fill = friend))+
+  theme_minimal()
+```
+
+```{r}
+df_start |> 
+  filter(ego %in% c(paste0("user_", c(1:6)))) |> 
+  ggplot(aes(x = ideology, y = friend))+
+  geom_swarm(aes(color = friend), side = "bottom")+
+  stat_halfeye(aes(fill = friend))+
+  theme_minimal()+
+  facet_wrap(.~ego)
+```
+
+
+
+```{r}
+mod = glmer(friend ~ (1|ego) + ideology, 
+            data = df_start,
+            family = binomial(link = "logit") )
+
+
+summary(mod)
+```
+
+```{r}
+?plot_model
+
+plot_model(mod, type = "re")
+```
+
