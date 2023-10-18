@@ -18,7 +18,7 @@ library(sjPlot)
 set.seed(123)
 
 n_users = 20
-n_alters = 3*2
+n_alters = 4
 
 ego = rep(paste0("user_", c(1:n_users)), n_alters*2)
 ego_var = rep(rnorm(n_users, mean = 1, 0.5), n_alters*2)
@@ -93,5 +93,9 @@ summary(mod)
 ?plot_model
 
 plot_model(mod, type = "re")
+```
+
+```{r}
+plot_model(mod)
 ```
 
