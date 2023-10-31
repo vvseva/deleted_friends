@@ -41,3 +41,17 @@ df_1 |>
 purple_colfunc <- colorRampPalette(c("#E4E0EE", "#836EAA"))
 ```
 
+
+
+## values to list
+
+
+```{r}
+x |> 
+  as.data.frame()
+
+x[-1] -> x2
+
+x[-1] |> unlist() |> as.data.frame()
+```
+

@@ -46,8 +46,8 @@ ui <- fluidPage(
           HTML("
                <b> Instructions and opt-out: </b> <br>
                In the following survey, we will ask questions about 
-               up to eight of your most recently removed Facebook 
-               connections, and up to eight of your current connections. 
+               up to five of your most recently removed Facebook 
+               connections, and up to five of your current connections. 
                If there are any individuals that you wish to avoid 
                discussing, please uncheck their names here.
                ")
@@ -125,7 +125,7 @@ server <- function(input, output, session) {
 
     if (nrow(fb_removed_df) < 1)  {
       output$html_confirm_friends <- renderUI(
-          h4("Sorry, you have not deleted any friends in the past 3 years, and therefore you are not qualify for the next part of the study"),
+          h3("Sorry, you have not deleted any friends in the past 3 years, and therefore you are not qualify for the next part of the study"),
           
           track_that(mongo_batch_track = mongo_batch_track, 
                      time = Sys.time(),
@@ -142,11 +142,13 @@ server <- function(input, output, session) {
                  as.Date.POSIXct())
       
     values$fb_df_removed <- fb_removed_df |>
-      head(10) |>
+      head(5) |>
       mutate(id = row_number()) |>
       mutate(bg_color = n() |>
                purple_colfunc() |>
-               lighten(amount = 0.75))
+               lighten(amount = 0.75)) |> 
+      mutate(select_name = str_glue("{name} (removed at {date})", 
+                                    name = name, date = timestamp))
     
     fb_your_df <- tryCatch({
       
@@ -167,11 +169,13 @@ server <- function(input, output, session) {
       mutate(timestamp = timestamp |>
                as.Date.POSIXct()) |>
       filter(!name %in% fb_removed_df$name) |> 
-      sample_n(size = nrow(fb_removed_df)) |> ## TODO: replace with 5?
+      sample_n(size = 5) |> ## TODO: replace with 5?
       mutate(id = row_number()) |>
       mutate(bg_color = n() |>
                purple_colfunc() |>
-               lighten(amount = 0.75))
+               lighten(amount = 0.75)) |> 
+      mutate(select_name = str_glue("{name} (added at {date})", 
+                                    name = name, date = timestamp))
 
 
     output$html_confirm_friends <- renderUI(
@@ -180,8 +184,8 @@ server <- function(input, output, session) {
         checkboxGroupInput(
           inputId = "checkboxGroupInput_fb_cpnfirm",
           label = "Please, uncheck names that you do not feel comfortable talking about.",
-          choices = c(values$fb_df_existing$name, values$fb_df_removed$name),
-          selected  = c(values$fb_df_existing$name, values$fb_df_removed$name)
+          choices = c(values$fb_df_existing$select_name, values$fb_df_removed$select_name),
+          selected  = c(values$fb_df_existing$select_name, values$fb_df_removed$select_name)
         ),
         actionButton(inputId = "actionButton_fb_confirm",
                      label = "Confirm")
@@ -206,12 +210,12 @@ server <- function(input, output, session) {
     hide("upload_deleted_div")
     
     values$fb_df_removed_filtered <- isolate(values$fb_df_removed) |> 
-      filter(name %in% input$checkboxGroupInput_fb_cpnfirm)
+      filter(select_name %in% input$checkboxGroupInput_fb_cpnfirm)
 
     if(nrow(values$fb_df_removed_filtered) < 1){
       ## TODO: message or something
       output$html_deleted <- renderUI(
-        H4("No removed friends left :(")
+        h3("No removed friends left :(")
       )
 
     } else {
@@ -245,12 +249,12 @@ server <- function(input, output, session) {
     
     
     values$fb_df_existing_filtered <- isolate(values$fb_df_existing) |> 
-      filter(name %in% input$checkboxGroupInput_fb_cpnfirm)
+      filter(select_name %in% input$checkboxGroupInput_fb_cpnfirm)
     
     if(nrow(values$fb_df_existing_filtered) < 1){
       ## TODO: message or something
       output$html_deleted <- renderUI(
-        H4("No existing friends left :(")
+        h3("No existing friends left :(")
       )
       
     } else {
@@ -258,7 +262,7 @@ server <- function(input, output, session) {
         column(
           width = 8,
           fluidRow(
-            isolate(values$fb_df_removed_filtered) |>
+            isolate(values$fb_df_existing_filtered) |>
               purrr::pmap(data.frame) |>
               purrr::map(render_question_2),
           ),
@@ -306,8 +310,12 @@ server <- function(input, output, session) {
     AllInputs <- reactive({
       x <- reactiveValuesToList(input)
       
+      print(x)
+      
+      saveRDS(x, file = "x.rds")
+      
       x <- x |> 
-        as_tibble() |> 
+        as.data.frame() |> 
         t() |> 
         data.frame() |> 
         rownames_to_column(var = "input") |> 
@@ -316,6 +324,7 @@ server <- function(input, output, session) {
           session_user = session$user,
           time = Sys.time()
                )
+    
       
        ## TODO: add time of friends
       if (values$remove == TRUE) {
@@ -336,14 +345,14 @@ server <- function(input, output, session) {
     output$html_verification <- renderUI(
       column(
         width = 8,
-        h4("An example of the anonymized data that we collect."),
-        renderTable(AllInputs() |> 
-                      sample_n(10)
+        h3("After this step we will save your answers on the server. We will save only your answers, and will not store names of your Facebook connections. You can decide to withdraw your data from this study, but in this case we would not able to issue you the full compensation."),
+        renderTable(AllInputs() |>
+                      sample_n(1)
                     # |> head(10)
                     ),
-        actionButton(inputId = "actionButton_sumbit1",
-                   label = "Sumbit"),
-        actionButton(inputId = "actionButton_sumbit0",
+        actionButton(inputId = "actionButton_submit1",
+                   label = "Submit and continue"),
+        actionButton(inputId = "actionButton_submit0",
                      label = "Remove all my data from the study.")
       )
     )
@@ -353,9 +362,14 @@ server <- function(input, output, session) {
                time = Sys.time(),
                session = session$token,
                stage = "html_verification")
+    
+    
+    
+    values$logs |> isolate() |> write.csv("x.csv")
+    
   })
   
-  observeEvent(input$actionButton_sumbit1, {
+  observeEvent(input$actionButton_submit1, {
     hide("verification_div")
     
     output$text_token_out <- renderText({ session$token })
@@ -364,7 +378,7 @@ server <- function(input, output, session) {
       column(
         width = 8,
         fluidRow(),
-        h4("Thank your for the participation in the survey, please copy this code and paste it to the qualtrics."),
+        h3("Thank your for the participation in the survey, please copy this code and paste it to the field above."),
         fluidRow(
           verbatimTextOutput("text_token_out")
         ),
@@ -388,7 +402,7 @@ server <- function(input, output, session) {
     
   })
   
-  observeEvent(input$actionButton_sumbit0, {
+  observeEvent(input$actionButton_submit0, {
     hide("verification_div")
     
     values$remove <- TRUE
@@ -397,7 +411,7 @@ server <- function(input, output, session) {
       column(
         width = 8,
         fluidRow(),
-        h4("Your data was removed from the survey, feel free to close the tab."),
+        h3("Your answers were removed from the survey, feel free to close the tab."),
       )
     )
     
@@ -413,6 +427,8 @@ server <- function(input, output, session) {
   
   onStop(function() {
     print("session ended")
+    # values$logs |> isolate() |> write.csv("logs.csv")
+    
     mongo_batch$insert(
       values$logs |> isolate()
     )

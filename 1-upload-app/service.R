@@ -26,17 +26,18 @@ render_question <- function(deleted_friend){
                            border-radius: 25px;
                            background:linear-gradient(white, {bg_color});"),
           h4(str_glue("Who is {f_name}, that you deleted at {timestamp}")),
-          h5("Political Ideology"),
+          h4("Political Ideology"),
           radioButtons(
-            inputId = str_glue("radioButtons_political1_{id}"),
+            inputId = str_glue("radioButtons_political1_r_{id}"),
             label = str_glue("Please indicate what you perceive {f_name} political ideology to be, to the best of your recollection."),
             choices = c(
             "Very Liberal", "Liberal", 
             "Moderate", "Conservative", 
-            "Very Conservative", "Don’t know")
+            "Very Conservative", "Don’t know"),
+            selected = character(0)
             ),
           sliderTextInput(
-            inputId = str_glue("sliderTextInput_political1_{id}"),
+            inputId = str_glue("sliderTextInput_political1_r_{id}"),
             label = "How confident are you in this assessment?",
             grid = TRUE,
             force_edges = TRUE,
@@ -45,28 +46,30 @@ render_question <- function(deleted_friend){
                         "Confident", "Very Confident")
           ),
           radioButtons(
-            inputId = str_glue("radioButtons_political2_{id}", id = id),
+            inputId = str_glue("radioButtons_political2_r_{id}", id = id),
             label = str_glue("How often, if ever, did you see {f_name} share things about political or social issues on Facebook?"),
             choices = c(
               "Frequently", "Rarely", 
-              "Never", "Unsure/don’t remember")
+              "Never", "Unsure/don’t remember"),
+            selected = character(0)
           ),
-          h5("Religiosity"),
+          h4("Religiosity"),
           radioButtons(
-            inputId = str_glue("radioButtons_religion1_{id}", id = id),
+            inputId = str_glue("radioButtons_religion1_r_{id}", id = id),
             label = str_glue("Please indicate what you perceive {f_name} religious affiliation to be, to the best of your recollection. "),
             choices = c(
               "Christian", "Muslim", 
               "Jewish", "Hindu",
               "Buddhist", "Atheist/Agnostic",
               "Unsure",
-              "Other (please specify)")
+              "Other (please specify)"),
+            selected = character(0)
           ),
           ## TODO: add conditional text for other
-          textInput(inputId = str_glue("textInput_religion_{id}", id = id),
+          textInput(inputId = str_glue("textInput_religion_r_{id}", id = id),
                     label = "Other (please specify)"),
           sliderTextInput(
-            inputId = str_glue("sliderTextInput_religion1_{id}"),
+            inputId = str_glue("sliderTextInput_religion1_r_{id}"),
             label = "How confident are you in this assessment?",
             grid = TRUE,
             force_edges = TRUE,
@@ -75,23 +78,24 @@ render_question <- function(deleted_friend){
                         "Confident", "Very Confident")
           ),
           radioButtons(
-            inputId = str_glue("radioButtons_religion2_{id}", id = id),
+            inputId = str_glue("radioButtons_religion2_r_{id}", id = id),
             label = str_glue("Please indicate the extent to which you encounter(ed) religious content from {f_name},  to the best of your recollection."),
             choices = c(
               "Frequently", "Rarely", 
-              "Never")
+              "Never"),
+            selected = character(0)
           ),
-          h5("Age"),
+          h4("Age"),
           numericInput(
-            inputId = str_glue("numericInput_age1_{id}", id = id),
+            inputId = str_glue("numericInput_age1_r_{id}", id = id),
             label = "Please provide the approximate age that you believe the connection to be. This does not need to be exact.",
-            value = 0,
-            min = 0, 
+            value = NULL,
+            min = 16, 
             max = 100
           ),
-          h5("Ethnic Status"),
+          h4("Ethnic Status"),
           radioButtons(
-            inputId = str_glue("radioButtons_ethinc1_{id}", id = id),
+            inputId = str_glue("radioButtons_ethinc1_r_{id}", id = id),
             label = str_glue("Please indicate what you perceive {f_name}'s ethnicity to be, to the best of your recollection."),
             choices = c(
               "White or Caucasian", "Black or African American", 
@@ -99,13 +103,14 @@ render_question <- function(deleted_friend){
               "Native American", "Native Hawaiian or Other Pacific Islander",
               "Middle Eastern or Arab", "Multiracial/Mixed",
               "Don’t know",
-              "Other (please specify)")
+              "Other (please specify)"),
+            selected = character(0)
           ),
           ## TODO: add conditional text for other
-          textInput(inputId = str_glue("textInput_ethinc_{id}", id = id),
+          textInput(inputId = str_glue("textInput_ethinc_r_{id}", id = id),
                     label = "Other (please specify)"),
           sliderTextInput(
-            inputId = str_glue("sliderTextInput_ethinc1_{id}"),
+            inputId = str_glue("sliderTextInput_ethinc1_r_{id}"),
             label = "How confident are you in this assessment?",
             grid = TRUE,
             force_edges = TRUE,
@@ -113,20 +118,21 @@ render_question <- function(deleted_friend){
                         "Not confident", "Somewhat confident", 
                         "Confident", "Very Confident")
           ),
-          h5("Gender Identity"),
+          h4("Gender Identity"),
           radioButtons(
-            inputId = str_glue("radioButtons_gener_{id}", id = id),
+            inputId = str_glue("radioButtons_gener_r_{id}", id = id),
             label = str_glue("Please indicate what you perceive {f_name} gender to be, to the best of your recollection."),
             choices = c(
               "Male", "Female", 
               "Non-binary/Third gender", "Unsure",
-              "Preffer to self-describe")
+              "Preffer to self-describe"),
+            selected = character(0)
           ),
           ## TODO: add conditional text for other
-          textInput(inputId = str_glue("textInput_gender_{id}", id = id),
+          textInput(inputId = str_glue("textInput_gender_r_{id}", id = id),
                     label = "Preffer to self-describe"),
           sliderTextInput(
-            inputId = str_glue("sliderTextInput_gender1_{id}"),
+            inputId = str_glue("sliderTextInput_gender1_r_{id}"),
             label = "How confident are you in this assessment?",
             grid = TRUE,
             force_edges = TRUE,
@@ -134,7 +140,7 @@ render_question <- function(deleted_friend){
                         "Not confident", "Somewhat confident", 
                         "Confident", "Very Confident")
           ),
-          # h5("Sexual Orientation"),
+          # h4("Sexual Orientation"),
           # radioButtons(
           #   inputId = str_glue("radioButtons_orientation_{id}", id = id),
           #   label = str_glue("Please indicate what you perceive {f_name} sexual orientation to be, to the best of your recollection."),
@@ -145,63 +151,68 @@ render_question <- function(deleted_friend){
           # ## TODO: add conditional text for other
           # textInput(inputId = str_glue("textInput_orientation_{id}", id = id),
           #           label = "Preffer to self-describe"),
-          h5("Education Status"),
+          h4("Education Status"),
           radioButtons(
-            inputId = str_glue("radioButtons_education_{id}", id = id),
+            inputId = str_glue("radioButtons_education_r_{id}", id = id),
             label = str_glue("Please indicate what you perceive {f_name} highest level of education to be, to the best of your recollection."),
             choices = c(
               "Less than High School", "High School Diploma or Equivalent (e.g., GED)", 
               "Associate's Degree (e.g., AA, AS)", "Bachelor's Degree (e.g., BA, BS)",
               "Master's Degree (e.g., MA, MS)", "Doctorate or Professional Degree (e.g., PhD, MD)",
-              "Unsure")
+              "Unsure"),
+            selected = character(0)
           ),
-          h5("Online/Offline"),
+          h4("Online/Offline"),
           radioButtons(
-            inputId = str_glue("radioButtons_onlineoffline_{id}", id = id),
+            inputId = str_glue("radioButtons_onlineoffline_r_{id}", id = id),
             label = str_glue("Please indicate how you interacted with the {f_name}."),
             choices = c(
               "Online exclusively", "Primarily online", 
               "Primarily offline", "Both online and offline",
-              "Unsure")
+              "Unsure"),
+            selected = character(0)
           ),
-          h5("Meeting Opportunities"),
+          h4("Meeting Opportunities"),
           radioButtons(
-            inputId = str_glue("radioButtons_meeting_{id}", id = id),
+            inputId = str_glue("radioButtons_meeting_r_{id}", id = id),
             label = str_glue("At the time that you unfriended {f_name}, when was the last time you had encountered them in-person/virtual?"),
             choices = c(
               "Within a week prior to unfriending", 
               "Within a month prior to unfriending", 
               "Within a year prior to unfriending", 
               "More than a year prior",
-              "Unsure")
+              "Unsure"),
+            selected = character(0)
           ),
-          h5("Context"),
-          radioButtons(
-            inputId = str_glue("radioButtons_context_{id}", id = id),
-            label = str_glue("Please indicate the context that you have interacted with {f_name}, to the best of your recollection."),
+          h4("Context"),
+          checkboxGroupInput(
+            inputId = str_glue("checkboxGroupInput_context_r_{id}", id = id),
+            label = str_glue("Please indicate the context that you have interacted with {f_name}, to the best of your recollection. Select all that apply"),
             choices = c(
               "Residential (around the house)", "Recreational (in leisure)", 
               "Vocational (at work)", "Educational (at school)",
               "Religious (at church)", "Military", 
-              "Other (please specify)")
+              "Other (please specify)"),
+            selected = character(0)
           ),
           ## TODO: add conditional text for other
-          textInput(inputId = str_glue("textInput_context_{id}", id = id),
+          textInput(inputId = str_glue("textInput_context_r_{id}", id = id),
                     label = "Other (please specify)"),
           
-          h5("Social Relationships"),
+          h4("Social Relationships"),
           radioButtons(
-            inputId = str_glue("radioButtons_relationship_{id}", id = id),
+            inputId = str_glue("radioButtons_relationship_r_{id}", id = id),
             label = str_glue("Please describe the social relationship(s) that you have shared with {f_name}, to the best of your recollection (e.g., friend, coworker, etc.)."),
             choices = c(
               "Acquaintance", "Neighbor", 
               "Friend", "Coworker or colleague",
               "Teacher/student", "Family by blood",
               "Family by marriage", "Romantic or sexual partner",
-              "None", "Other (please specify)")
+              "None", "Other (please specify)"),
+            selected = character(0)
           ),
           ## TODO: add conditional text for other
-          textInput(inputId = str_glue("textInput_relationship_{id}", id = id),
+          textInput(inputId = str_glue("textInput_relationship_r_{id}", id = id),
                     label = "Other (please specify)"),
       ),
 
@@ -234,46 +245,50 @@ render_question_2 <- function(deleted_friend){
                            border-radius: 25px;
                            background:linear-gradient(white, {bg_color});"),
           h4(str_glue("Who is {f_name}, that you added at {timestamp}")),
-          h5("Political Ideology"),
+          h4("Political Ideology"),
           radioButtons(
-            inputId = str_glue("radioButtons_political1_{id}"),
+            inputId = str_glue("radioButtons_political1_e_{id}"),
             label = str_glue("Please indicate what you perceive {f_name} political ideology to be, to the best of your recollection."),
             choices = c(
             "Very Liberal", "Liberal", 
             "Moderate", "Conservative", 
-            "Very Conservative", "Unsure")
+            "Very Conservative", "Unsure"),
+            selected = character(0)
             ),
           radioButtons(
-            inputId = str_glue("radioButtons_political2_{id}", id = id),
+            inputId = str_glue("radioButtons_political2_e_{id}", id = id),
             label = str_glue("How often, if ever, did you see {f_name} share things about political or social issues on Facebook?"),
             choices = c(
               "Frequently", "Rarely", 
-              "Never", "Unsure/don’t remember")
+              "Never", "Unsure/don’t remember"),
+            selected = character(0)
           ),
-          h5("Religiosity"),
+          h4("Religiosity"),
           radioButtons(
-            inputId = str_glue("radioButtons_religion1_{id}", id = id),
+            inputId = str_glue("radioButtons_religion1_e_{id}", id = id),
             label = str_glue("Please indicate what you perceive {f_name} religious affiliation to be, to the best of your recollection. "),
             choices = c(
               "Christian", "Muslim", 
               "Jewish", "Hindu",
               "Buddhist", "Atheist/Agnostic",
               "Unsure",
-              "Other (please specify)")
+              "Other (please specify)"),
+            selected = character(0)
           ),
           ## TODO: add conditional text for other
-          textInput(inputId = str_glue("textInput_religion_{id}", id = id),
+          textInput(inputId = str_glue("textInput_religion_e_{id}", id = id),
                     label = "Other (please specify)"),
           radioButtons(
-            inputId = str_glue("radioButtons_religion2_{id}", id = id),
+            inputId = str_glue("radioButtons_religion2_e_{id}", id = id),
             label = str_glue("Please indicate the extent to which you encounter(ed) religious content from {f_name},  to the best of your recollection."),
             choices = c(
               "Frequently", "Rarely", 
-              "Never")
+              "Never"),
+            selected = character(0)
           ),
-          h5("Ethnic Status"),
+          h4("Ethnic Status"),
           radioButtons(
-            inputId = str_glue("radioButtons_ethinc1_{id}", id = id),
+            inputId = str_glue("radioButtons_ethinc1_e_{id}", id = id),
             label = str_glue("Please indicate what you perceive {f_name}'s ethnicity to be, to the best of your recollection."),
             choices = c(
               "White or Caucasian", "Black or African American", 
@@ -281,61 +296,66 @@ render_question_2 <- function(deleted_friend){
               "Native American", "Native Hawaiian or Other Pacific Islander",
               "Middle Eastern or Arab", "Multiracial/Mixed",
               "Unsure",
-              "Other (please specify)")
+              "Other (please specify)"),
+            selected = character(0)
           ),
           ## TODO: add conditional text for other
-          textInput(inputId = str_glue("textInput_ethinc_{id}", id = id),
+          textInput(inputId = str_glue("textInput_ethinc_e_{id}", id = id),
                     label = "Other (please specify)"),
-          h5("Gender Identity"),
+          h4("Gender Identity"),
           radioButtons(
-            inputId = str_glue("radioButtons_gener_{id}", id = id),
+            inputId = str_glue("radioButtons_gener_e_{id}", id = id),
             label = str_glue("Please indicate what you perceive {f_name} gender to be, to the best of your recollection."),
             choices = c(
               "Male", "Female", 
               "Non-binary/Third gender", "Unsure",
-              "Preffer to self-describe")
+              "Preffer to self-describe"),
+            selected = character(0)
           ),
           ## TODO: add conditional text for other
-          textInput(inputId = str_glue("textInput_gender_{id}", id = id),
+          textInput(inputId = str_glue("textInput_gender_e_{id}", id = id),
                     label = "Preffer to self-describe"),
-          h5("Sexual Orientation"),
+          h4("Sexual Orientation"),
           radioButtons(
-            inputId = str_glue("radioButtons_orientation_{id}", id = id),
+            inputId = str_glue("radioButtons_orientation_e_{id}", id = id),
             label = str_glue("Please indicate what you perceive {f_name} sexual orientation to be, to the best of your recollection."),
             choices = c(
               "Heterosexual or Straight", "Unsure", 
-              "Preffer to self-describe")
+              "Preffer to self-describe"),
+            selected = character(0)
           ),
           ## TODO: add conditional text for other
-          textInput(inputId = str_glue("textInput_orientation_{id}", id = id),
+          textInput(inputId = str_glue("textInput_orientation_e_{id}", id = id),
                     label = "Preffer to self-describe"),
-          h5("Context"),
+          h4("Context"),
           radioButtons(
-            inputId = str_glue("radioButtons_context_{id}", id = id),
+            inputId = str_glue("radioButtons_context_e_{id}", id = id),
             label = str_glue("Please indicate the context that you have interacted with {f_name}, to the best of your recollection."),
             choices = c(
               "Residential", "Vocational", 
               "Educational", "Religious",
               "Recreational", "Military",
-              "None", "Other (please specify)")
+              "None", "Other (please specify)"),
+            selected = character(0)
           ),
           ## TODO: add conditional text for other
-          textInput(inputId = str_glue("textInput_context_{id}", id = id),
+          textInput(inputId = str_glue("textInput_context_e_{id}", id = id),
                     label = "Other (please specify)"),
           
-          h5("Social Relationships"),
+          h4("Social Relationships"),
           radioButtons(
-            inputId = str_glue("radioButtons_relationship_{id}", id = id),
+            inputId = str_glue("radioButtons_relationship_e_{id}", id = id),
             label = str_glue("Please describe the social relationship(s) that you have shared with {f_name}, to the best of your recollection (e.g., friend, coworker, etc.)."),
             choices = c(
               "Acquaintance", "Neighbor", 
               "Friend", "Coworker or colleague",
               "Teacher/student", "Family by blood",
               "Family by marriage", "Romantic or sexual partner",
-              "None", "Other (please specify)")
+              "None", "Other (please specify)"),
+            selected = character(0)
           ),
           ## TODO: add conditional text for other
-          textInput(inputId = str_glue("textInput_relationship_{id}", id = id),
+          textInput(inputId = str_glue("textInput_relationship_e_{id}", id = id),
                     label = "Other (please specify)"),
       ),
 
@@ -354,16 +374,17 @@ render_question_p <- function(){
                            border-radius: 25px;
                            background:linear-gradient(white, #32a852);"),
         
-        h5("Personal Values"),
+        h4("Personal Values"),
         p("Now, please indicate your personal identifications with the following."),
-        # h5("Political Ideology"),
+        # h4("Political Ideology"),
         radioButtons(
           inputId = "radioButtons_political_p",
           label = "Political Ideology:",
           choices = c(
             "Very Liberal", "Liberal", 
             "Moderate", "Conservative", 
-            "Very Conservative", "Unsure")
+            "Very Conservative", "Unsure"),
+          selected = character(0)
         ),
         radioButtons(
           inputId = "radioButtons_religion_p",
@@ -373,7 +394,8 @@ render_question_p <- function(){
             "Jewish", "Hindu",
             "Buddhist", "Atheist/Agnostic",
             "Unsure",
-            "Other (please specify)")
+            "Other (please specify)"),
+          selected = character(0)
         ),
         textInput(inputId = "textInput_religion_p",
                   label = "Other (please specify)"),
@@ -381,15 +403,16 @@ render_question_p <- function(){
           inputId = "radioButtons_usage_p",
           label = "How frequently do you use Facebook?",
           choices = c("Multiple times a day", "Once a day",
-                      "Once a week", "Rarely or never")
+                      "Once a week", "Rarely or never"),
+          selected = character(0)
         ),
-        h5("Demographic Questions"),
+        h4("Demographic Questions"),
         numericInput(
           inputId = "numericInput_age_p",
           label = "How old are you?",
-          min = 0,
+          min = 16,
           max = 100,
-          value = 0
+          value = NULL
         ),
         radioButtons(
           inputId = "radioButtons_gener_p",
@@ -397,7 +420,8 @@ render_question_p <- function(){
           choices = c(
             "Male", "Female", 
             "Non-binary/Third gender", "Unsure",
-            "Preffer to self-describe")
+            "Preffer to self-describe"),
+          selected = character(0)
         ),
         ## TODO: add conditional text for other
         textInput(inputId = "textInput_gender_p",
@@ -411,7 +435,8 @@ render_question_p <- function(){
             "Less than High School", "High School Diploma or Equivalent (e.g., GED)", 
             "Associate's Degree (e.g., AA, AS)", "Bachelor's Degree (e.g., BA, BS)",
             "Master's Degree (e.g., MA, MS)", "Doctorate or Professional Degree (e.g., PhD, MD)",
-            "Unsure")
+            "Unsure"),
+          selected = character(0)
         ),
         radioButtons(
           inputId = "radioButtons_employment_p",
@@ -420,7 +445,8 @@ render_question_p <- function(){
             "Employed full-time", "Employed part-time", 
             "Unemployed", "Student (full-time)",
             "Student (part-time)", "Doctorate or Professional Degree (e.g., PhD, MD)",
-            "Unsure")
+            "Unsure"),
+          selected = character(0)
         ),
         radioButtons(
           inputId = "radioButtons_income_p",
@@ -433,7 +459,8 @@ render_question_p <- function(){
             "$80,000 - $99,999",
             "$100,000 - $149,999",
             "$150,000 or more",
-            "Prefer not to say")
+            "Prefer not to say"),
+          selected = character(0)
         ),
         radioButtons(
           inputId = "radioButtons_marital_p",
@@ -444,7 +471,8 @@ render_question_p <- function(){
             "Married",
             "Divorced",
             "Widowed",
-            "Prefer not to say")
+            "Prefer not to say"),
+          selected = character(0)
         ),
         
         
