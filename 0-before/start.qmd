@@ -52,6 +52,9 @@ x |>
 
 x[-1] -> x2
 
-x[-1] |> unlist() |> as.data.frame()
+x[-1] |> unlist() |> as.data.frame() |> 
+  rename(value = "unlist(x[-1])") |> 
+  rownames_to_column("input") |> 
+  filter(!input |> str_detect("checkboxGroupInput_fb_cpnfirm"))
 ```
 

@@ -26,6 +26,10 @@ render_question <- function(deleted_friend){
                            border-radius: 25px;
                            background:linear-gradient(white, {bg_color});"),
           h4(str_glue("Who is {f_name}, that you deleted at {timestamp}")),
+          textAreaInput(
+            inputId = str_glue("textAreaInput_reason1_r_{id}"),
+            label = str_glue("In a few sentences, try to describe why did you unfriend {f_name} on Facebook?")
+          ),
           h4("Political Ideology"),
           radioButtons(
             inputId = str_glue("radioButtons_political1_r_{id}"),
@@ -88,10 +92,14 @@ render_question <- function(deleted_friend){
           h4("Age"),
           numericInput(
             inputId = str_glue("numericInput_age1_r_{id}", id = id),
-            label = "Please provide the approximate age that you believe the connection to be. This does not need to be exact.",
+            label = "Please provide the approximate age that you believe the connection to be. This does not need to be exact",
             value = NULL,
             min = 16, 
             max = 100
+          ),
+          checkboxInput(
+            inputId = str_glue("checkboxInput_age2_r_{id}", id = id),
+            label = "Unsure"
           ),
           h4("Ethnic Status"),
           radioButtons(
@@ -125,12 +133,12 @@ render_question <- function(deleted_friend){
             choices = c(
               "Male", "Female", 
               "Non-binary/Third gender", "Unsure",
-              "Preffer to self-describe"),
+              "Prefer to self-describe"),
             selected = character(0)
           ),
           ## TODO: add conditional text for other
           textInput(inputId = str_glue("textInput_gender_r_{id}", id = id),
-                    label = "Preffer to self-describe"),
+                    label = "Prefer to self-describe"),
           sliderTextInput(
             inputId = str_glue("sliderTextInput_gender1_r_{id}"),
             label = "How confident are you in this assessment?",
@@ -146,11 +154,11 @@ render_question <- function(deleted_friend){
           #   label = str_glue("Please indicate what you perceive {f_name} sexual orientation to be, to the best of your recollection."),
           #   choices = c(
           #     "Heterosexual or Straight", "Unsure", 
-          #     "Preffer to self-describe")
+          #     "Prefer to self-describe")
           # ),
           # ## TODO: add conditional text for other
           # textInput(inputId = str_glue("textInput_orientation_{id}", id = id),
-          #           label = "Preffer to self-describe"),
+          #           label = "Prefer to self-describe"),
           h4("Education Status"),
           radioButtons(
             inputId = str_glue("radioButtons_education_r_{id}", id = id),
@@ -181,6 +189,7 @@ render_question <- function(deleted_friend){
               "Within a month prior to unfriending", 
               "Within a year prior to unfriending", 
               "More than a year prior",
+              "Never",
               "Unsure"),
             selected = character(0)
           ),
@@ -191,7 +200,7 @@ render_question <- function(deleted_friend){
             choices = c(
               "Residential (around the house)", "Recreational (in leisure)", 
               "Vocational (at work)", "Educational (at school)",
-              "Religious (at church)", "Military", 
+              "Religious (at events)", "Military", 
               "Other (please specify)"),
             selected = character(0)
           ),
@@ -200,8 +209,8 @@ render_question <- function(deleted_friend){
                     label = "Other (please specify)"),
           
           h4("Social Relationships"),
-          radioButtons(
-            inputId = str_glue("radioButtons_relationship_r_{id}", id = id),
+          checkboxGroupInput(
+            inputId = str_glue("checkboxGroupInput_relationship_r_{id}", id = id),
             label = str_glue("Please describe the social relationship(s) that you have shared with {f_name}, to the best of your recollection (e.g., friend, coworker, etc.)."),
             choices = c(
               "Acquaintance", "Neighbor", 
@@ -309,27 +318,27 @@ render_question_2 <- function(deleted_friend){
             choices = c(
               "Male", "Female", 
               "Non-binary/Third gender", "Unsure",
-              "Preffer to self-describe"),
+              "Prefer to self-describe"),
             selected = character(0)
           ),
           ## TODO: add conditional text for other
           textInput(inputId = str_glue("textInput_gender_e_{id}", id = id),
-                    label = "Preffer to self-describe"),
+                    label = "Prefer to self-describe"),
           h4("Sexual Orientation"),
           radioButtons(
             inputId = str_glue("radioButtons_orientation_e_{id}", id = id),
             label = str_glue("Please indicate what you perceive {f_name} sexual orientation to be, to the best of your recollection."),
             choices = c(
               "Heterosexual or Straight", "Unsure", 
-              "Preffer to self-describe"),
+              "Prefer to self-describe"),
             selected = character(0)
           ),
           ## TODO: add conditional text for other
           textInput(inputId = str_glue("textInput_orientation_e_{id}", id = id),
-                    label = "Preffer to self-describe"),
+                    label = "Prefer to self-describe"),
           h4("Context"),
-          radioButtons(
-            inputId = str_glue("radioButtons_context_e_{id}", id = id),
+          checkboxGroupInput(
+            inputId = str_glue("checkboxGroupInput_context_e_{id}", id = id),
             label = str_glue("Please indicate the context that you have interacted with {f_name}, to the best of your recollection."),
             choices = c(
               "Residential", "Vocational", 
@@ -343,8 +352,8 @@ render_question_2 <- function(deleted_friend){
                     label = "Other (please specify)"),
           
           h4("Social Relationships"),
-          radioButtons(
-            inputId = str_glue("radioButtons_relationship_e_{id}", id = id),
+          checkboxGroupInput(
+            inputId = str_glue("checkboxGroupInput_relationship_e_{id}", id = id),
             label = str_glue("Please describe the social relationship(s) that you have shared with {f_name}, to the best of your recollection (e.g., friend, coworker, etc.)."),
             choices = c(
               "Acquaintance", "Neighbor", 
@@ -420,12 +429,12 @@ render_question_p <- function(){
           choices = c(
             "Male", "Female", 
             "Non-binary/Third gender", "Unsure",
-            "Preffer to self-describe"),
+            "Prefer to self-describe"),
           selected = character(0)
         ),
         ## TODO: add conditional text for other
         textInput(inputId = "textInput_gender_p",
-                  label = "Preffer to self-describe"),
+                  label = "Prefer to self-describe"),
         textInput(inputId = "textInput_ethnicity_p",
                   label = "Ethnicity"),
         radioButtons(

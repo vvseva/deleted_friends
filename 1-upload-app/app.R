@@ -307,30 +307,54 @@ server <- function(input, output, session) {
     hide("questions_p_div")
     
     
-    AllInputs <- reactive({
+    # AllInputs <- reactive({
       x <- reactiveValuesToList(input)
       
-      print(x)
-      
-      saveRDS(x, file = "x.rds")
-      
-      x <- x |> 
-        as.data.frame() |> 
-        t() |> 
-        data.frame() |> 
-        rownames_to_column(var = "input") |> 
-        pivot_longer(cols = -'input', names_to = "user") |> 
-        mutate(
-          session_user = session$user,
-          time = Sys.time()
-               )
+      # print(x)
+      # 
+      # saveRDS(x, file = "x.rds")
+      # 
+      # x <- x |> 
+      #   as.data.frame() |> 
+      #   t() |> 
+      #   data.frame() |> 
+      #   rownames_to_column(var = "input") |> 
+      #   pivot_longer(cols = -'input', names_to = "user") |> 
+      #   mutate(
+      #     session_user = session$user,
+      #     time = Sys.time()
+      #          )
     
+      x <- x[-1] |> 
+        unlist() |> 
+        as.data.frame() |> 
+        rename(value = "unlist(x[-1])") |> 
+        rownames_to_column("input") |> 
+        filter(!input |> str_detect("checkboxGroupInput_fb_cpnfirm")) |> 
+        bind_rows(
+          isolate(values$fb_df_existing_filtered) |> 
+            select(id, timestamp) |> 
+            mutate(input = str_glue("existing_friend_id_{id}", id = id),
+                   value = timestamp |> as.character()) |> 
+            select(input, value)
+        ) |> 
+        bind_rows(
+          isolate(values$fb_df_removed_filtered) |> 
+            select(id, timestamp) |> 
+            mutate(input = str_glue("removed_friend_id_{id}", id = id),
+                   value = timestamp |> as.character()) |> 
+            select(input, value)
+        ) |> 
+        mutate(
+              session_user = session$token,
+              timestamp = Sys.time()
+                   )
       
        ## TODO: add time of friends
       if (values$remove == TRUE) {
         values$logs <- data.frame(
           input = "removed",
-          session_user = session$user,
+          session_user = session$token,
           time = Sys.time()
         )
       } else {
@@ -339,17 +363,17 @@ server <- function(input, output, session) {
       }
       
 
-    })
+    # })
     
     
     output$html_verification <- renderUI(
       column(
         width = 8,
         h3("After this step we will save your answers on the server. We will save only your answers, and will not store names of your Facebook connections. You can decide to withdraw your data from this study, but in this case we would not able to issue you the full compensation."),
-        renderTable(AllInputs() |>
-                      sample_n(1)
-                    # |> head(10)
-                    ),
+        # renderTable(AllInputs() |>
+        #               sample_n(1)
+        #             # |> head(10)
+        #             ),
         actionButton(inputId = "actionButton_submit1",
                    label = "Submit and continue"),
         actionButton(inputId = "actionButton_submit0",
@@ -365,7 +389,7 @@ server <- function(input, output, session) {
     
     
     
-    values$logs |> isolate() |> write.csv("x.csv")
+    # values$logs |> isolate() |> write.csv("x.csv")
     
   })
   
