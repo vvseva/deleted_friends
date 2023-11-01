@@ -223,6 +223,12 @@ render_question <- function(deleted_friend){
           ## TODO: add conditional text for other
           textInput(inputId = str_glue("textInput_relationship_r_{id}", id = id),
                     label = "Other (please specify)"),
+          checkboxGroupInput(
+            inputId = str_glue("checkboxGroupInput_nconnection_r_{id}", id = id),
+            label = str_glue("To the best of your recollection how many mutual friends or connections did the person you unfriended have within your social network? Please provide your best estimate."),
+            selected = c(0),
+            choices = c("None", "a few (1-5)", "some (6-25)", "many (over 25)", "I honestly do not know")
+          )
       ),
 
         
@@ -366,6 +372,12 @@ render_question_2 <- function(deleted_friend){
           ## TODO: add conditional text for other
           textInput(inputId = str_glue("textInput_relationship_e_{id}", id = id),
                     label = "Other (please specify)"),
+          checkboxGroupInput(
+            inputId = str_glue("checkboxGroupInput_nconnection_e_{id}", id = id),
+            label = str_glue("To the best of your recollection, how many mutual friends or connections did the person you unfriended have within your social network? Please provide your best estimate."),
+            selected = c(0),
+            choices = c("None", "a few (1-5)", "some (6-25)", "many (over 25)", "I honestly do not know")
+          )
       ),
 
         
