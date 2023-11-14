@@ -211,13 +211,20 @@ server <- function(input, output, session) {
     
     values$fb_df_removed_filtered <- isolate(values$fb_df_removed) |> 
       filter(select_name %in% input$checkboxGroupInput_fb_cpnfirm)
+    
+    values$fb_df_existing_filtered <- isolate(values$fb_df_existing) |> 
+      filter(select_name %in% input$checkboxGroupInput_fb_cpnfirm)
 
     if(nrow(values$fb_df_removed_filtered) < 1){
       ## TODO: message or something
       output$html_deleted <- renderUI(
-        h3("No removed friends left :(")
+        h3("You removed all deleted friends. Unfortunately you could not continue the study. Please exit the survey.")
       )
 
+    } else if (nrow(values$fb_df_existing_filtered) < 1) {
+      output$html_deleted <- renderUI(
+        h3("You removed all existing friends. Unfortunately you could not continue the study. Please exit the survey.")
+      )
     } else {
       output$html_deleted <- renderUI(
         column(
@@ -251,12 +258,16 @@ server <- function(input, output, session) {
     values$fb_df_existing_filtered <- isolate(values$fb_df_existing) |> 
       filter(select_name %in% input$checkboxGroupInput_fb_cpnfirm)
     
-    if(nrow(values$fb_df_existing_filtered) < 1){
+    if(nrow(values$fb_df_existing_filtered) < 1 ){
       ## TODO: message or something
-      output$html_deleted <- renderUI(
-        h3("No existing friends left :(")
+      output$html_existing <- renderUI(
+        h3("You removed all deleted friends. Unfortunately you could not continue the study. Please exit the survey.")
       )
       
+    } else if (nrow(values$fb_df_removed_filtered) < 1) {
+      output$html_existing <- renderUI(
+        h3("You removed all existing friends. Unfortunately you could not continue the study. Please exit the survey.")
+      )
     } else {
       output$html_existing <- renderUI(
         column(

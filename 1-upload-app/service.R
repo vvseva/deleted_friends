@@ -28,12 +28,12 @@ render_question <- function(deleted_friend){
           h4(str_glue("Who is {f_name}, that you deleted at {timestamp}")),
           textAreaInput(
             inputId = str_glue("textAreaInput_reason1_r_{id}"),
-            label = str_glue("In a few sentences, try to describe why did you unfriend {f_name} on Facebook?")
+            label = str_glue("In a few sentences, try to describe why you unfriend {f_name} on Facebook?")
           ),
           h4("Political Ideology"),
           radioButtons(
             inputId = str_glue("radioButtons_political1_r_{id}"),
-            label = str_glue("Please indicate what you perceive {f_name} political ideology to be, to the best of your recollection."),
+            label = str_glue("Please indicate what you perceive {f_name}'s political ideology to be, to the best of your recollection."),
             choices = c(
             "Very Liberal", "Liberal", 
             "Moderate", "Conservative", 
@@ -51,7 +51,7 @@ render_question <- function(deleted_friend){
           ),
           radioButtons(
             inputId = str_glue("radioButtons_political2_r_{id}", id = id),
-            label = str_glue("How often, if ever, did you see {f_name} share things about political or social issues on Facebook?"),
+            label = str_glue("How often, if ever, did you see {f_name}'s share things about political or social issues on Facebook?"),
             choices = c(
               "Frequently", "Rarely", 
               "Never", "Unsure/don’t remember"),
@@ -60,7 +60,7 @@ render_question <- function(deleted_friend){
           h4("Religiosity"),
           radioButtons(
             inputId = str_glue("radioButtons_religion1_r_{id}", id = id),
-            label = str_glue("Please indicate what you perceive {f_name} religious affiliation to be, to the best of your recollection. "),
+            label = str_glue("Please indicate what you perceive {f_name}'s religious affiliation to be, to the best of your recollection. "),
             choices = c(
               "Christian", "Muslim", 
               "Jewish", "Hindu",
@@ -129,7 +129,7 @@ render_question <- function(deleted_friend){
           h4("Gender Identity"),
           radioButtons(
             inputId = str_glue("radioButtons_gener_r_{id}", id = id),
-            label = str_glue("Please indicate what you perceive {f_name} gender to be, to the best of your recollection."),
+            label = str_glue("Please indicate what you perceive {f_name}'s gender to be, to the best of your recollection."),
             choices = c(
               "Male", "Female", 
               "Non-binary/Third gender", "Unsure",
@@ -162,7 +162,7 @@ render_question <- function(deleted_friend){
           h4("Education Status"),
           radioButtons(
             inputId = str_glue("radioButtons_education_r_{id}", id = id),
-            label = str_glue("Please indicate what you perceive {f_name} highest level of education to be, to the best of your recollection."),
+            label = str_glue("Please indicate what you perceive {f_name}'s highest level of education to be, to the best of your recollection."),
             choices = c(
               "Less than High School", "High School Diploma or Equivalent (e.g., GED)", 
               "Associate's Degree (e.g., AA, AS)", "Bachelor's Degree (e.g., BA, BS)",
