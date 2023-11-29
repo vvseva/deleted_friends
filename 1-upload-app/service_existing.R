@@ -26,7 +26,7 @@ render_question_2 <- function(deleted_friend){
           h4(str_glue("We will ask you a set of question about {f_name}, who you added on {timestamp}")),
           textAreaInput(
             inputId = str_glue("textAreaInput_reason1_e_{id}"),
-            label = str_glue("In a few sentences, try to describe who is {f_name}?")
+            label = str_glue("In a few sentences, please describe who is {f_name} to you?")
           ),
           h4("Political Ideology"),
           radioButtons(
@@ -51,7 +51,7 @@ render_question_2 <- function(deleted_friend){
           ),
           radioButtons(
             inputId = str_glue("radioButtons_political2_e_{id}", id = id),
-            label = str_glue("How often, if ever, did you encountered {f_name} share or post content about political or social issues on Facebook?"),
+            label = str_glue("How often, if ever, did you encounter {f_name} share or post content about political or social issues on Facebook?"),
             choices = c(
               "Frequently", "Rarely", 
               "Never"),
@@ -91,29 +91,29 @@ render_question_2 <- function(deleted_friend){
           ),
           radioButtons(
             inputId = str_glue("radioButtons_religion2_e_{id}", id = id),
-            label = str_glue("Please indicate the extent to which you encounter(ed) religious content from {f_name},  to the best of your recollection."),
+            label = str_glue("How often, if ever, did you encounter {f_name} share or post content about religion,  to the best of your recollection."),
             choices = c(
               "Frequently", "Rarely", 
               "Never"),
             selected = character(0)
           ),
-          h4("Age"),
-          numericInput(
-            inputId = str_glue("numericInput_age1_e_{id}", id = id),
-            label = "Please provide the approximate age (in years) of {f_name}. This does not need to be exact",
-            value = NULL,
-            min = 12, 
-            max = 100
-          ),
-          sliderTextInput(
-            inputId = str_glue("sliderTextInput_age1_e_{id}"),
-            label = "How confident are you in this assessment?",
-            grid = TRUE,
-            force_edges = TRUE,
-            choices = c("Not at all confident", 
-                        "Not confident", "Somewhat confident", 
-                        "Confident", "Very Confident")
-          ),
+          # h4("Age"),
+          # numericInput(
+          #   inputId = str_glue("numericInput_age1_e_{id}", id = id),
+          #   label = str_glue("Please provide the approximate age (in years) of {f_name}. This does not need to be exact"),
+          #   value = NULL,
+          #   min = 12, 
+          #   max = 100
+          # ),
+          # sliderTextInput(
+          #   inputId = str_glue("sliderTextInput_age1_e_{id}"),
+          #   label = "How confident are you in this assessment?",
+          #   grid = TRUE,
+          #   force_edges = TRUE,
+          #   choices = c("Not at all confident", 
+          #               "Not confident", "Somewhat confident", 
+          #               "Confident", "Very Confident")
+          # ),
           h4("Ethnic Status"),
           radioButtons(
             inputId = str_glue("radioButtons_ethinc1_e_{id}", id = id),
@@ -172,29 +172,29 @@ render_question_2 <- function(deleted_friend){
           # ## TODO: add conditional text for other
           # textInput(inputId = str_glue("textInput_orientation_{id}", id = id),
           #           label = "Prefer to self-describe"),
-          h4("Education Status"),
-          radioButtons(
-            inputId = str_glue("radioButtons_education_e_{id}", id = id),
-            label = str_glue("To the best of your recollection, please indicate what you perceived as {f_name}'s highest level of education."),
-            choices = c(
-              "Less than High School", "High School Diploma or Equivalent (e.g., GED)", 
-              "Associate's Degree (e.g., AA, AS)", "Bachelor's Degree (e.g., BA, BS)",
-              "Master's Degree (e.g., MA, MS)", "Doctorate or Professional Degree (e.g., PhD, MD)"),
-            selected = character(0)
-          ),
-          sliderTextInput(
-            inputId = str_glue("sliderTextInput_education_e_{id}"),
-            label = "How confident are you in this assessment?",
-            grid = TRUE,
-            force_edges = TRUE,
-            choices = c("Not at all confident", 
-                        "Not confident", "Somewhat confident", 
-                        "Confident", "Very Confident")
-          ),
+          # h4("Education Status"),
+          # radioButtons(
+          #   inputId = str_glue("radioButtons_education_e_{id}", id = id),
+          #   label = str_glue("To the best of your recollection, please indicate what you perceived as {f_name}'s highest level of education."),
+          #   choices = c(
+          #     "Less than High School", "High School Diploma or Equivalent (e.g., GED)", 
+          #     "Associate's Degree (e.g., AA, AS)", "Bachelor's Degree (e.g., BA, BS)",
+          #     "Master's Degree (e.g., MA, MS)", "Doctorate or Professional Degree (e.g., PhD, MD)"),
+          #   selected = character(0)
+          # ),
+          # sliderTextInput(
+          #   inputId = str_glue("sliderTextInput_education_e_{id}"),
+          #   label = "How confident are you in this assessment?",
+          #   grid = TRUE,
+          #   force_edges = TRUE,
+          #   choices = c("Not at all confident", 
+          #               "Not confident", "Somewhat confident", 
+          #               "Confident", "Very Confident")
+          # ),
           h4("Online/Offline"),
           radioButtons(
             inputId = str_glue("radioButtons_onlineoffline_e_{id}", id = id),
-            label = str_glue("Please indicate how you interacted with the {f_name}."),
+            label = str_glue("Please indicate how you interacted with {f_name}."),
             choices = c(
               "Online exclusively", "Primarily online", 
               "Primarily offline", "Both online and offline", "Never"),
@@ -202,27 +202,6 @@ render_question_2 <- function(deleted_friend){
           ),
           sliderTextInput(
             inputId = str_glue("sliderTextInput_onlineoffline_e_{id}"),
-            label = "How confident are you in this assessment?",
-            grid = TRUE,
-            force_edges = TRUE,
-            choices = c("Not at all confident", 
-                        "Not confident", "Somewhat confident", 
-                        "Confident", "Very Confident")
-          ),
-          h4("Meeting Opportunities"),
-          radioButtons(
-            inputId = str_glue("radioButtons_meeting_e_{id}", id = id),
-            label = str_glue("At the time that you unfriended {f_name}, when was the last time you had encountered them in-person/virtual?"),
-            choices = c(
-              "Within a week prior to unfriending", 
-              "Within a month prior to unfriending", 
-              "Within a year prior to unfriending", 
-              "More than a year prior",
-              "Never"),
-            selected = character(0)
-          ),
-          sliderTextInput(
-            inputId = str_glue("sliderTextInput_meeting_e_{id}"),
             label = "How confident are you in this assessment?",
             grid = TRUE,
             force_edges = TRUE,

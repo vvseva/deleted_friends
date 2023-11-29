@@ -140,8 +140,8 @@ server <- function(input, output, session) {
       output$html_confirm_upload <- renderUI(
         column(
           width = 8,
-          p("You have sucessfully uploaded your file. 
-            We will temporary store it, but will not save it until the last step."),
+          p("You have successfully uploaded your file. 
+           We will temporarily store it, but will not save it until the last step."),
         actionButton(inputId = "actionButton_fb_confirm_upload",
                      label = "Continue")
         )
