@@ -1,8 +1,6 @@
-purple_colfunc <- colorRampPalette(c("#E4E0EE", "#8370AA"))
-
 ## TODO: wrap block into a function
 
-render_question <- function(deleted_friend){
+render_question_2 <- function(deleted_friend){
   
   f_name <- deleted_friend |> pull(name)
   id <- deleted_friend |> pull(id)
@@ -25,14 +23,14 @@ render_question <- function(deleted_friend){
                            background-color:{bg_color}; 
                            border-radius: 25px;
                            background:linear-gradient(white, {bg_color});"),
-          h4(str_glue("We will ask you a set of question about {f_name}, who you deleted on {timestamp}")),
+          h4(str_glue("We will ask you a set of question about {f_name}, who you added on {timestamp}")),
           textAreaInput(
-            inputId = str_glue("textAreaInput_reason1_r_{id}"),
-            label = str_glue("In a few sentences, try to describe why you unfriend {f_name} on Facebook?")
+            inputId = str_glue("textAreaInput_reason1_e_{id}"),
+            label = str_glue("In a few sentences, try to describe who is {f_name}?")
           ),
           h4("Political Ideology"),
           radioButtons(
-            inputId = str_glue("radioButtons_political1_r_{id}"),
+            inputId = str_glue("radioButtons_political1_e_{id}"),
             label = str_glue("To the best of your recollection, please indicate what you perceived as {f_name}'s political ideology."),
             choices = c(
             "Very Liberal", "Liberal", 
@@ -40,10 +38,10 @@ render_question <- function(deleted_friend){
             "Very Conservative", "Don’t know"),
             selected = character(0)
             ),
-          textInput(inputId = str_glue("textInput_political1_r_{id}", id = id),
+          textInput(inputId = str_glue("textInput_political1_e_{id}", id = id),
                     label = "Other (please specify)"),
           sliderTextInput(
-            inputId = str_glue("sliderTextInput_political1_r_{id}"),
+            inputId = str_glue("sliderTextInput_political1_e_{id}"),
             label = "How confident are you in this assessment?",
             grid = TRUE,
             force_edges = TRUE,
@@ -52,7 +50,7 @@ render_question <- function(deleted_friend){
                         "Confident", "Very Confident")
           ),
           radioButtons(
-            inputId = str_glue("radioButtons_political2_r_{id}", id = id),
+            inputId = str_glue("radioButtons_political2_e_{id}", id = id),
             label = str_glue("How often, if ever, did you encountered {f_name} share or post content about political or social issues on Facebook?"),
             choices = c(
               "Frequently", "Rarely", 
@@ -60,7 +58,7 @@ render_question <- function(deleted_friend){
             selected = character(0)
           ),
           sliderTextInput(
-            inputId = str_glue("sliderTextInput_political2_r_{id}"),
+            inputId = str_glue("sliderTextInput_political2_e_{id}"),
             label = "How confident are you in this assessment?",
             grid = TRUE,
             force_edges = TRUE,
@@ -70,7 +68,7 @@ render_question <- function(deleted_friend){
           ),
           h4("Religiosity"),
           radioButtons(
-            inputId = str_glue("radioButtons_religion1_r_{id}", id = id),
+            inputId = str_glue("radioButtons_religion1_e_{id}", id = id),
             label = str_glue("To the best of your recollection, please indicate what you perceived as {f_name}'s religious affiliation."),
             choices = c(
               "Christian", "Muslim", 
@@ -80,10 +78,10 @@ render_question <- function(deleted_friend){
             selected = character(0)
           ),
           ## TODO: add conditional text for other
-          textInput(inputId = str_glue("textInput_religion_r_{id}", id = id),
+          textInput(inputId = str_glue("textInput_religion_e_{id}", id = id),
                     label = "Other (please specify)"),
           sliderTextInput(
-            inputId = str_glue("sliderTextInput_religion1_r_{id}"),
+            inputId = str_glue("sliderTextInput_religion1_e_{id}"),
             label = "How confident are you in this assessment?",
             grid = TRUE,
             force_edges = TRUE,
@@ -92,7 +90,7 @@ render_question <- function(deleted_friend){
                         "Confident", "Very Confident")
           ),
           radioButtons(
-            inputId = str_glue("radioButtons_religion2_r_{id}", id = id),
+            inputId = str_glue("radioButtons_religion2_e_{id}", id = id),
             label = str_glue("Please indicate the extent to which you encounter(ed) religious content from {f_name},  to the best of your recollection."),
             choices = c(
               "Frequently", "Rarely", 
@@ -101,14 +99,14 @@ render_question <- function(deleted_friend){
           ),
           h4("Age"),
           numericInput(
-            inputId = str_glue("numericInput_age1_r_{id}", id = id),
+            inputId = str_glue("numericInput_age1_e_{id}", id = id),
             label = "Please provide the approximate age (in years) of {f_name}. This does not need to be exact",
             value = NULL,
             min = 12, 
             max = 100
           ),
           sliderTextInput(
-            inputId = str_glue("sliderTextInput_age1_r_{id}"),
+            inputId = str_glue("sliderTextInput_age1_e_{id}"),
             label = "How confident are you in this assessment?",
             grid = TRUE,
             force_edges = TRUE,
@@ -118,7 +116,7 @@ render_question <- function(deleted_friend){
           ),
           h4("Ethnic Status"),
           radioButtons(
-            inputId = str_glue("radioButtons_ethinc1_r_{id}", id = id),
+            inputId = str_glue("radioButtons_ethinc1_e_{id}", id = id),
             label = str_glue("To the best of your recollection, please indicate what you perceived as {f_name}'s ethnicity."),
             choices = c(
               "White or Caucasian", "Black or African American", 
@@ -130,10 +128,10 @@ render_question <- function(deleted_friend){
             selected = character(0)
           ),
           ## TODO: add conditional text for other
-          textInput(inputId = str_glue("textInput_ethinc_r_{id}", id = id),
+          textInput(inputId = str_glue("textInput_ethinc_e_{id}", id = id),
                     label = "Other (please specify)"),
           sliderTextInput(
-            inputId = str_glue("sliderTextInput_ethinc1_r_{id}"),
+            inputId = str_glue("sliderTextInput_ethinc1_e_{id}"),
             label = "How confident are you in this assessment?",
             grid = TRUE,
             force_edges = TRUE,
@@ -143,7 +141,7 @@ render_question <- function(deleted_friend){
           ),
           h4("Gender Identity"),
           radioButtons(
-            inputId = str_glue("radioButtons_gener_r_{id}", id = id),
+            inputId = str_glue("radioButtons_gener_e_{id}", id = id),
             label = str_glue("To the best of your recollection, please indicate what you perceived as {f_name}'s gender."),
             choices = c(
               "Male", "Female", 
@@ -152,10 +150,10 @@ render_question <- function(deleted_friend){
             selected = character(0)
           ),
           ## TODO: add conditional text for other
-          textInput(inputId = str_glue("textInput_gender_r_{id}", id = id),
+          textInput(inputId = str_glue("textInput_gender_e_{id}", id = id),
                     label = "Prefer to describe"),
           sliderTextInput(
-            inputId = str_glue("sliderTextInput_gender1_r_{id}"),
+            inputId = str_glue("sliderTextInput_gender1_e_{id}"),
             label = "How confident are you in this assessment?",
             grid = TRUE,
             force_edges = TRUE,
@@ -176,7 +174,7 @@ render_question <- function(deleted_friend){
           #           label = "Prefer to self-describe"),
           h4("Education Status"),
           radioButtons(
-            inputId = str_glue("radioButtons_education_r_{id}", id = id),
+            inputId = str_glue("radioButtons_education_e_{id}", id = id),
             label = str_glue("To the best of your recollection, please indicate what you perceived as {f_name}'s highest level of education."),
             choices = c(
               "Less than High School", "High School Diploma or Equivalent (e.g., GED)", 
@@ -185,7 +183,7 @@ render_question <- function(deleted_friend){
             selected = character(0)
           ),
           sliderTextInput(
-            inputId = str_glue("sliderTextInput_education_r_{id}"),
+            inputId = str_glue("sliderTextInput_education_e_{id}"),
             label = "How confident are you in this assessment?",
             grid = TRUE,
             force_edges = TRUE,
@@ -195,7 +193,7 @@ render_question <- function(deleted_friend){
           ),
           h4("Online/Offline"),
           radioButtons(
-            inputId = str_glue("radioButtons_onlineoffline_r_{id}", id = id),
+            inputId = str_glue("radioButtons_onlineoffline_e_{id}", id = id),
             label = str_glue("Please indicate how you interacted with the {f_name}."),
             choices = c(
               "Online exclusively", "Primarily online", 
@@ -203,7 +201,7 @@ render_question <- function(deleted_friend){
             selected = character(0)
           ),
           sliderTextInput(
-            inputId = str_glue("sliderTextInput_onlineoffline_r_{id}"),
+            inputId = str_glue("sliderTextInput_onlineoffline_e_{id}"),
             label = "How confident are you in this assessment?",
             grid = TRUE,
             force_edges = TRUE,
@@ -213,7 +211,7 @@ render_question <- function(deleted_friend){
           ),
           h4("Meeting Opportunities"),
           radioButtons(
-            inputId = str_glue("radioButtons_meeting_r_{id}", id = id),
+            inputId = str_glue("radioButtons_meeting_e_{id}", id = id),
             label = str_glue("At the time that you unfriended {f_name}, when was the last time you had encountered them in-person/virtual?"),
             choices = c(
               "Within a week prior to unfriending", 
@@ -224,7 +222,7 @@ render_question <- function(deleted_friend){
             selected = character(0)
           ),
           sliderTextInput(
-            inputId = str_glue("sliderTextInput_meeting_r_{id}"),
+            inputId = str_glue("sliderTextInput_meeting_e_{id}"),
             label = "How confident are you in this assessment?",
             grid = TRUE,
             force_edges = TRUE,
@@ -234,7 +232,7 @@ render_question <- function(deleted_friend){
           ),
           h4("Context"),
           checkboxGroupInput(
-            inputId = str_glue("checkboxGroupInput_context_r_{id}", id = id),
+            inputId = str_glue("checkboxGroupInput_context_e_{id}", id = id),
             label = str_glue("To the best of your recollection, please indicate the context in which you have interacted with {f_name}. Select all that apply"),
             choices = c(
               "Residential (around the house)", "Recreational (in leisure)", 
@@ -244,12 +242,12 @@ render_question <- function(deleted_friend){
             selected = character(0)
           ),
           ## TODO: add conditional text for other
-          textInput(inputId = str_glue("textInput_context_r_{id}", id = id),
+          textInput(inputId = str_glue("textInput_context_e_{id}", id = id),
                     label = "Other (please specify)"),
           
           h4("Social Relationships"),
           checkboxGroupInput(
-            inputId = str_glue("checkboxGroupInput_relationship_r_{id}", id = id),
+            inputId = str_glue("checkboxGroupInput_relationship_e_{id}", id = id),
             label = str_glue("To the best of your recollection, please describe the social relationship(s) that you have shared with {f_name}, e.g., friend, coworker, etc.. Select all that apply"),
             choices = c(
               "Acquaintance", "Neighbor", 
@@ -260,10 +258,10 @@ render_question <- function(deleted_friend){
             selected = character(0)
           ),
           ## TODO: add conditional text for other
-          textInput(inputId = str_glue("textInput_relationship_r_{id}", id = id),
+          textInput(inputId = str_glue("textInput_relationship_e_{id}", id = id),
                     label = "Other (please specify)"),
           checkboxGroupInput(
-            inputId = str_glue("checkboxGroupInput_nconnection_r_{id}", id = id),
+            inputId = str_glue("checkboxGroupInput_nconnection_e_{id}", id = id),
             label = str_glue("How many mutual friends or connections did {f_name} have within your social network? Please provide your best estimate."),
             selected = c(0),
             choices = c("None", "a few (1-5)", "some (6-25)", "many (over 25)", "I honestly do not know")
@@ -273,149 +271,4 @@ render_question <- function(deleted_friend){
         
     )
   }
-}
-
-
-render_question_p <- function(){
-  fluidRow(
-    # width = 6,
-    div(class = str_glue("questions_personal_div"),
-        style = str_glue("box-sizing: border-box;
-                            margin: 25px;
-                           background-color:#32a852; 
-                           border-radius: 25px;
-                           background:linear-gradient(white, #32a852);"),
-        
-        h4("Personal Values"),
-        p("Finally, please answer a set of questions about yourself"),
-        # h4("Political Ideology"),
-        radioButtons(
-          inputId = "radioButtons_political_p",
-          label = "Political Ideology:",
-          choices = c(
-            "Very Liberal", "Liberal", 
-            "Moderate", "Conservative", 
-            "Very Conservative", "Prefer not to say"),
-          selected = character(0)
-        ),
-        textInput(inputId = "textInput_political_p",
-                  label = "Other (please specify)"),
-        radioButtons(
-          inputId = "radioButtons_religion_p",
-          label = "Religion:",
-          choices = c(
-            "Christian", "Muslim", 
-            "Jewish", "Hindu",
-            "Buddhist", "Atheist/Agnostic",
-            "Prefer not to say",
-            "Other (please specify)"),
-          selected = character(0)
-        ),
-        textInput(inputId = "textInput_religion_p",
-                  label = "Other (please specify)"),
-        radioButtons(
-          inputId = "radioButtons_usage_p",
-          label = "How frequently do you use Facebook?",
-          choices = c("Multiple times a day", "Once a day",
-                      "Once a week", "Rarely or never"),
-          selected = character(0)
-        ),
-        h4("Demographic Questions"),
-        numericInput(
-          inputId = "numericInput_age_p",
-          label = "How old are you (in years)?",
-          min = 18,
-          max = 100,
-          value = NULL
-        ),
-        radioButtons(
-          inputId = "radioButtons_gener_p",
-          label = "Gender",
-          choices = c(
-            "Male", "Female", 
-            "Non-binary/Third gender",
-            "Prefer to self-describe"),
-          selected = character(0)
-        ),
-        ## TODO: add conditional text for other
-        textInput(inputId = "textInput_gender_p",
-                  label = "Prefer to self-describe"),
-        radioButtons(
-          inputId = str_glue("radioButtons_ethinc1_p"),
-          label = str_glue("Please indicate what your ethnicity."),
-          choices = c(
-            "White or Caucasian", "Black or African American", 
-            "Hispanic or Latino", "Asian",
-            "Native American", "Native Hawaiian or Other Pacific Islander",
-            "Middle Eastern or Arab", "Multiracial/Mixed",
-            "Other (please specify)"),
-          selected = character(0)
-        ),
-        ## TODO: add conditional text for other
-        textInput(inputId = str_glue("textInput_ethinc_p"),
-                  label = "Other (please specify)"),
-        radioButtons(
-          inputId = "radioButtons_education_p",
-          label = "Educational Level:",
-          choices = c(
-            "Less than High School", "High School Diploma or Equivalent (e.g., GED)", 
-            "Associate's Degree (e.g., AA, AS)", "Bachelor's Degree (e.g., BA, BS)",
-            "Master's Degree (e.g., MA, MS)", "Doctorate or Professional Degree (e.g., PhD, MD)",
-            "Prefer not to say"),
-          selected = character(0)
-        ),
-        radioButtons(
-          inputId = "radioButtons_employment_p",
-          label = "Employment Status:",
-          choices = c(
-            "Employed full-time", "Employed part-time", 
-            "Unemployed", "Student (full-time)",
-            "Student (part-time)", "Doctorate or Professional Degree (e.g., PhD, MD)",
-            "Prefer not to say"),
-          selected = character(0)
-        ),
-        radioButtons(
-          inputId = "radioButtons_income_p",
-          label = "Annual Household Income:",
-          choices = c(
-            "Less than $20,000", 
-            "$20,000 - $39,999",
-            "$40,000 - $59,999",
-            "$60,000 - $79,999",
-            "$80,000 - $99,999",
-            "$100,000 - $149,999",
-            "$150,000 or more",
-            "Prefer not to say"),
-          selected = character(0)
-        ),
-        radioButtons(
-          inputId = "radioButtons_marital_p",
-          label = "Relationship Status:",
-          choices = c(
-            "Single", 
-            "In a relationship",
-            "Married",
-            "Divorced",
-            "Widowed",
-            "Prefer not to say"),
-          selected = character(0)
-        ),
-        
-        
-    )
-  )
-}
-
-
-track_that <- function(mongo_batch_track, 
-                       time,
-                       session,
-                       stage = "test"){
-  mongo_batch_track$insert(
-    data.frame(
-      session = session,
-      time = time,
-      stage = stage
-    )
-  )
 }

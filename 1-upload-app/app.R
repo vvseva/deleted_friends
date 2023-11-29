@@ -10,6 +10,7 @@ library(shinyWidgets)
 library(rclipboard)
 
 source("service.R")
+source("service_existing.R")
 
 
 ## Storage
@@ -35,7 +36,7 @@ mongo_batch_track = mongo(db="fb_shiny",
 # Define UI for application that draws a histogram
 ui <- fluidPage(
   useShinyjs(),
-
+  tags$style(type = "text/css", ".irs-grid-pol.small {height: 0px;}"),
     # Application title
     titlePanel("Unfriending on Facebook"),
 
@@ -69,8 +70,11 @@ ui <- fluidPage(
           div(id = "upload_deleted_div",
               fileInput("upload_deleted", "Upload a facebook zip file",
                         accept = ".zip"),
-              htmlOutput("html_confirm_friends")
+              htmlOutput("html_confirm_upload")
               ),
+          div(id = "questions_0_div",
+              htmlOutput("html_confirm_friends")
+          ),
           div(id = "questions_1_div",
               htmlOutput("html_deleted")
               ),
@@ -124,7 +128,7 @@ server <- function(input, output, session) {
     })
 
     if (nrow(fb_removed_df) < 1)  {
-      output$html_confirm_friends <- renderUI(
+      output$html_confirm_upload <- renderUI(
           h3("Sorry, you have not deleted any friends in the past 3 years, and therefore you are not qualify for the next part of the study"),
           
           track_that(mongo_batch_track = mongo_batch_track, 
@@ -133,10 +137,26 @@ server <- function(input, output, session) {
                      stage = "html_confirm_friends_0")
       )
     } else {
+      output$html_confirm_upload <- renderUI(
+        column(
+          width = 8,
+          p("You have sucessfully uploaded your file. 
+            We will temporary store it, but will not save it until the last step."),
+        actionButton(inputId = "actionButton_fb_confirm_upload",
+                     label = "Continue")
+        )
+      )
+      
+      values$fb_removed_df <- fb_removed_df
+    }
+  })
       
   
+    observeEvent(input$actionButton_fb_confirm_upload, {
+      hide("intro_div")
+      hide("upload_deleted_div")
       
-      fb_removed_df <- fb_removed_df |>
+      fb_removed_df <- isolate(values$fb_removed_df) |>
         unnest_wider(col = deleted_friends_v2) |>
         mutate(timestamp = timestamp |>
                  as.Date.POSIXct())
@@ -182,12 +202,16 @@ server <- function(input, output, session) {
       column(
         width = 8,
         checkboxGroupInput(
-          inputId = "checkboxGroupInput_fb_cpnfirm",
+          inputId = "checkboxGroupInput_fb_confirm",
           label = "Please, uncheck names that you do not feel comfortable talking about.",
           choices = c(values$fb_df_existing$select_name, values$fb_df_removed$select_name),
           selected  = c(values$fb_df_existing$select_name, values$fb_df_removed$select_name)
         ),
-        actionButton(inputId = "actionButton_fb_confirm",
+        textAreaInput(
+          inputId = "textAreaInput_fb_confirm_explanation",
+          label = "If you have unchecked someone, please briefly explain why."
+        ),
+        actionButton(inputId = "actionButton_fb_confirm_selection",
                      label = "Confirm")
       )
     )
@@ -196,24 +220,18 @@ server <- function(input, output, session) {
                time = Sys.time(),
                session = session$token,
                stage = "html_confirm_friends_1")
-  }
-    
-  
-    
-    
   })
   
   
   
-  observeEvent(input$actionButton_fb_confirm, {
-    hide("intro_div")
-    hide("upload_deleted_div")
+  observeEvent(input$actionButton_fb_confirm_selection, {
+    hide("questions_0_div")
     
     values$fb_df_removed_filtered <- isolate(values$fb_df_removed) |> 
-      filter(select_name %in% input$checkboxGroupInput_fb_cpnfirm)
+      filter(select_name %in% input$checkboxGroupInput_fb_confirm)
     
     values$fb_df_existing_filtered <- isolate(values$fb_df_existing) |> 
-      filter(select_name %in% input$checkboxGroupInput_fb_cpnfirm)
+      filter(select_name %in% input$checkboxGroupInput_fb_confirm)
 
     if(nrow(values$fb_df_removed_filtered) < 1){
       ## TODO: message or something
@@ -256,7 +274,7 @@ server <- function(input, output, session) {
     
     
     values$fb_df_existing_filtered <- isolate(values$fb_df_existing) |> 
-      filter(select_name %in% input$checkboxGroupInput_fb_cpnfirm)
+      filter(select_name %in% input$checkboxGroupInput_fb_confirm)
     
     if(nrow(values$fb_df_existing_filtered) < 1 ){
       ## TODO: message or something
@@ -341,7 +359,7 @@ server <- function(input, output, session) {
         as.data.frame() |> 
         rename(value = "unlist(x[-1])") |> 
         rownames_to_column("input") |> 
-        filter(!input |> str_detect("checkboxGroupInput_fb_cpnfirm")) |> 
+        filter(!input |> str_detect("checkboxGroupInput_fb_confirm")) |> 
         bind_rows(
           isolate(values$fb_df_existing_filtered) |> 
             select(id, timestamp) |> 
