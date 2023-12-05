@@ -33,6 +33,8 @@ mongo_batch_track = mongo(db="fb_shiny",
                     collection="tracking_0",
                     url=connection_string)
 
+w = 9
+
 # Define UI for application that draws a histogram
 ui <- fluidPage(
   useShinyjs(),
@@ -41,23 +43,23 @@ ui <- fluidPage(
     titlePanel("Unfriending on Facebook"),
 
     # Sidebar with a slider input for number of bins 
-    sidebarLayout(
-        sidebarPanel(
-          div(id = "intro_div",
-          HTML("
-               <b> Instructions and opt-out: </b> <br>
-               In the following survey, we will ask questions about 
-               up to five of your most recently removed Facebook 
-               connections, and up to five of your current connections. 
-               If there are any individuals that you wish to avoid 
-               discussing, please uncheck their names here.
-               ")
-          )
-        ),
+        # sidebarPanel(
+        #   div(id = "intro_div",
+        #   HTML("
+        #        <b> Instructions and opt-out: </b> <br>
+        #        In the following survey, we will ask questions about 
+        #        up to five of your most recently removed Facebook 
+        #        connections, and up to five of your current connections. 
+        #        If there are any individuals that you wish to avoid 
+        #        discussing, please uncheck their names here.
+        #        ")
+        #   )
+        # ),
 
         # Show a plot of the generated distribution
         mainPanel(
           fluidPage(
+            column(2),
             rclipboardSetup(),
             tags$script(
               "$(document).on('shiny:inputchanged', function(event) {
@@ -67,6 +69,7 @@ ui <- fluidPage(
         });
         "
             ),
+            # column(12,
           div(id = "upload_deleted_div",
               fileInput("upload_deleted", "Upload a facebook zip file",
                         accept = ".zip"),
@@ -91,8 +94,9 @@ ui <- fluidPage(
               htmlOutput("html_final")
           )
         )
+        # )
     )
-    )
+
 )
 
 # Define server logic required to draw a histogram
@@ -103,6 +107,8 @@ server <- function(input, output, session) {
                            fb_df_filtered = NULL,
                            logs = NULL,
                            remove = FALSE)
+  
+  values$validation_code <- floor(runif(1, min=10000000, max=99999999))
   
   # values$fb_df <- tibble(name = NULL)
 
@@ -139,7 +145,7 @@ server <- function(input, output, session) {
     } else {
       output$html_confirm_upload <- renderUI(
         column(
-          width = 8,
+          width = w,
           p("You have successfully uploaded your file. 
            We will temporarily store it, but will not save it until the last step."),
         actionButton(inputId = "actionButton_fb_confirm_upload",
@@ -200,7 +206,7 @@ server <- function(input, output, session) {
 
     output$html_confirm_friends <- renderUI(
       column(
-        width = 8,
+        width = w,
         checkboxGroupInput(
           inputId = "checkboxGroupInput_fb_confirm",
           label = "Please, uncheck names that you do not feel comfortable talking about.",
@@ -246,7 +252,7 @@ server <- function(input, output, session) {
     } else {
       output$html_deleted <- renderUI(
         column(
-          width = 8,
+          width = w,
         fluidRow(
         isolate(values$fb_df_removed_filtered) |>
           purrr::pmap(data.frame) |>
@@ -289,7 +295,7 @@ server <- function(input, output, session) {
     } else {
       output$html_existing <- renderUI(
         column(
-          width = 8,
+          width = w,
           fluidRow(
             isolate(values$fb_df_existing_filtered) |>
               purrr::pmap(data.frame) |>
@@ -312,7 +318,7 @@ server <- function(input, output, session) {
     
     output$html_personal <- renderUI(
       column(
-        width = 8,
+        width = w,
         fluidRow(
           render_question_p()
         ),
@@ -397,7 +403,7 @@ server <- function(input, output, session) {
     
     output$html_verification <- renderUI(
       column(
-        width = 8,
+        width = w,
         h3("After this step we will save your answers on the server. We will save only your answers, and will not store names of your Facebook connections. You can decide to withdraw your data from this study, but in this case we would not able to issue you the full compensation."),
         # renderTable(AllInputs() |>
         #               sample_n(1)
@@ -425,11 +431,13 @@ server <- function(input, output, session) {
   observeEvent(input$actionButton_submit1, {
     hide("verification_div")
     
-    output$text_token_out <- renderText({ session$token })
+    
+    
+    output$text_token_out <- renderText({ values$validation_code })
     
     output$html_final <- renderUI(
       column(
-        width = 8,
+        width = w,
         fluidRow(),
         h3("Thank your for the participation in the survey, please copy this code and paste it to the field above."),
         fluidRow(
@@ -440,7 +448,7 @@ server <- function(input, output, session) {
           rclipButton(
             inputId = "clipbtn",
             label = "Copy code",
-            clipText = session$token, 
+            clipText = isolate(values$validation_code), 
             icon = icon("clipboard")
           )
         )
@@ -462,7 +470,7 @@ server <- function(input, output, session) {
     
     output$html_final <- renderUI(
       column(
-        width = 8,
+        width = w,
         fluidRow(),
         h3("Your answers were removed from the survey, feel free to close the tab."),
       )
